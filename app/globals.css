@@ -38,3 +38,9 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: #5A57E6;
 }
+
+/* Hide default browser password reveal button */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}

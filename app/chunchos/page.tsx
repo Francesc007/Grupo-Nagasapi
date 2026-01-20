@@ -33,8 +33,8 @@ export default function ChunchosPage() {
               className="space-y-8"
             >
               <div className="inline-flex items-center gap-2 bg-stone-100 text-naga-brown px-4 py-2 rounded-full border border-stone-200 text-xs font-black uppercase tracking-widest">
-                <Coffee size={14} className="fill-current" />
-                Un cafecito y una playera pa' llevar
+                <Zap size={14} className="fill-current" />
+                Envío Gratis CDMX {">"} $500 MXN
               </div>
               <h1 className="text-6xl lg:text-8xl font-black leading-[0.9] tracking-tighter uppercase italic">
                 <span className="text-naga-brown">CHUN</span><span className="text-naga-red">CHOS</span>
@@ -43,8 +43,9 @@ export default function ChunchosPage() {
                 Diseños con intención. Conciencia, propósito y estrategia en cada prenda. Descubre nuestra colección de playeras premium con impresión DTF de alta definición.
               </p>
               <div className="flex gap-4">
-                <Link href="#colecciones" className="bg-naga-brown text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl">
-                  Ver Colecciones
+                <Link href="#colecciones" className="bg-naga-brown text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl flex items-center gap-2 group">
+                  Explora catálogo
+                  <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
                 </Link>
               </div>
             </motion.div>

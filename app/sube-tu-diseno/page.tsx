@@ -19,6 +19,8 @@ const reviews = [
   { name: "Elena G.", text: "La calidad de la impresión superó mis expectativas. ¡Recomendado!", stars: 5 },
 ];
 
+import FeaturesSection from "@/components/FeaturesSection";
+
 export default function SubeTuDisenoPage() {
   const [currentImg, setCurrentImg] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -153,6 +155,8 @@ export default function SubeTuDisenoPage() {
           </div>
         </div>
       </section>
+
+      <FeaturesSection colorTheme="purple" showFeatures={false} showProcess={true} />
 
       <Footer />
     </main>

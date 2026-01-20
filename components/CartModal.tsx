@@ -1,14 +1,16 @@
 "use client";
 import React, { useState } from "react";
-import { X, ShoppingBag, Trash2, Plus, Minus, CreditCard } from "lucide-react";
+import { X, ShoppingBag, Trash2, Plus, Minus, CreditCard, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function CartModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const { cart, removeFromCart, updateQuantity, subtotal } = useCart();
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
+  const router = useRouter();
 
   const applyCoupon = () => {
     if (coupon.toUpperCase() === "NAGA20") {
@@ -16,6 +18,11 @@ export default function CartModal({ isOpen, onClose }: { isOpen: boolean; onClos
     } else {
       setDiscount(0);
     }
+  };
+
+  const handleCheckout = () => {
+    onClose();
+    router.push("/checkout");
   };
 
   const total = subtotal - discount;
@@ -36,24 +43,40 @@ export default function CartModal({ isOpen, onClose }: { isOpen: boolean; onClos
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-full w-full max-w-md bg-white z-[70] shadow-2xl flex flex-col"
+            className="fixed right-0 top-0 h-full w-full max-w-md bg-white z-[70] shadow-2xl flex flex-col border-l border-naga-purple/10"
           >
             {/* Header */}
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <ShoppingBag className="text-naga-green" />
-                <h2 className="text-xl font-black text-black uppercase tracking-tighter">Tu Carrito</h2>
-                <span className="bg-naga-green text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+            <div className="p-6 bg-naga-cotton border-b border-naga-purple/10 flex items-center justify-between relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-naga-purple/5 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2" />
+              
+              <div className="flex items-center gap-3 relative z-10">
+                <div className="w-10 h-10 bg-naga-purple text-white rounded-xl flex items-center justify-center shadow-lg shadow-naga-purple/20">
+                  <ShoppingBag size={20} />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-black uppercase tracking-tighter leading-none">Tus Compras</h2>
+                  <p className="text-[10px] text-naga-purple font-black uppercase tracking-[0.2em] mt-1">Grupo Nagasapi</p>
+                </div>
+                <span className="bg-black text-white text-[10px] font-bold px-2 py-1 rounded-lg ml-2">
                   {cart.length}
                 </span>
               </div>
-              <button onClick={onClose} className="text-gray-400 hover:text-black transition-colors">
+              <button onClick={onClose} className="text-gray-400 hover:text-black transition-colors relative z-10">
                 <X size={24} />
               </button>
             </div>
 
+            {/* CTA Banner */}
+            {cart.length > 0 && (
+              <div className="bg-naga-purple text-white py-3 px-6 text-center">
+                <p className="text-[11px] font-black uppercase tracking-[0.15em] italic">
+                  🚀 ¡Estás a un paso de estrenar tu estilo único!
+                </p>
+              </div>
+            )}
+
             {/* Items */}
-            <div className="flex-grow overflow-y-auto p-6 space-y-6">
+            <div className="flex-grow overflow-y-auto p-6 space-y-6 bg-gray-50/50">
               {cart.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
                   <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center text-gray-300">
@@ -62,7 +85,7 @@ export default function CartModal({ isOpen, onClose }: { isOpen: boolean; onClos
                   <p className="text-gray-400 font-medium">Tu carrito está vacío</p>
                   <button
                     onClick={onClose}
-                    className="text-naga-green font-bold hover:underline"
+                    className="text-naga-purple font-bold hover:underline"
                   >
                     Explorar productos
                   </button>
@@ -102,7 +125,7 @@ export default function CartModal({ isOpen, onClose }: { isOpen: boolean; onClos
                             <Plus size={14} />
                           </button>
                         </div>
-                        <p className="text-naga-green font-black">${item.price * item.quantity} MXN</p>
+                        <p className="text-naga-purple font-black">${item.price * item.quantity} MXN</p>
                       </div>
                     </div>
                   </div>
@@ -120,7 +143,7 @@ export default function CartModal({ isOpen, onClose }: { isOpen: boolean; onClos
                     placeholder="Cupón (NAGA20)"
                     value={coupon}
                     onChange={(e) => setCoupon(e.target.value)}
-                    className="flex-grow bg-gray-50 border border-gray-100 rounded-xl px-4 py-2 text-sm text-black focus:ring-1 focus:ring-naga-green"
+                    className="flex-grow bg-gray-50 border border-gray-100 rounded-xl px-4 py-2 text-sm text-black focus:ring-1 focus:ring-naga-purple outline-none"
                   />
                   <button
                     onClick={applyCoupon}
@@ -136,7 +159,7 @@ export default function CartModal({ isOpen, onClose }: { isOpen: boolean; onClos
                     <span>${subtotal} MXN</span>
                   </div>
                   {discount > 0 && (
-                    <div className="flex justify-between text-naga-green text-sm">
+                    <div className="flex justify-between text-naga-purple text-sm">
                       <span>Descuento (20%)</span>
                       <span>-${discount} MXN</span>
                     </div>
@@ -147,7 +170,10 @@ export default function CartModal({ isOpen, onClose }: { isOpen: boolean; onClos
                   </div>
                 </div>
 
-                <button className="w-full bg-naga-green hover:bg-black text-white font-black py-4 rounded-xl flex items-center justify-center gap-3 transition-all uppercase tracking-widest shadow-lg shadow-naga-green/20">
+                <button 
+                  onClick={handleCheckout}
+                  className="w-full bg-naga-purple hover:bg-black text-white font-black py-4 rounded-xl flex items-center justify-center gap-3 transition-all uppercase tracking-widest shadow-lg shadow-naga-purple/20"
+                >
                   <CreditCard size={20} />
                   Pagar Ahora
                 </button>

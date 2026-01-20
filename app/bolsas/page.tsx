@@ -31,8 +31,8 @@ export default function LaPincheBolsaPage() {
               className="space-y-8"
             >
               <div className="inline-flex items-center gap-2 bg-green-50 text-green-600 px-4 py-2 rounded-full border border-green-100 text-xs font-black uppercase tracking-widest">
-                <Heart size={14} className="fill-current" />
-                ¡Que tu pinche bolsa hable por ti!
+                <Zap size={14} className="fill-current" />
+                Envío Gratis CDMX {">"} $500 MXN
               </div>
               <h1 className="text-6xl lg:text-8xl font-black text-black leading-[0.9] tracking-tighter uppercase italic">
                 LA PINCHE <span className="text-green-600">BOLSA</span>
@@ -41,8 +41,9 @@ export default function LaPincheBolsaPage() {
                 Nuestra colección es un lienzo andante lleno de colores y creatividad. Desde el caos hermoso de las calles de la CDMX hasta el encanto de sus barrios.
               </p>
               <div className="flex gap-4">
-                <Link href="#productos" className="bg-black text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-green-600 transition-all shadow-xl">
-                  Comprar Ahora
+                <Link href="#productos" className="bg-black text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-green-600 transition-all shadow-xl flex items-center gap-2 group">
+                  Explora catálogo
+                  <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
                 </Link>
               </div>
             </motion.div>

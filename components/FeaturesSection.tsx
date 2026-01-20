@@ -12,119 +12,160 @@ import {
   Send
 } from "lucide-react";
 
-export default function FeaturesSection({ colorTheme = "purple" }: { colorTheme?: "purple" | "green" }) {
-  const primaryColor = colorTheme === "purple" ? "naga-purple" : "naga-green";
+interface FeaturesSectionProps {
+  colorTheme?: "purple" | "green";
+  showFeatures?: boolean;
+  showProcess?: boolean;
+}
+
+export default function FeaturesSection({ 
+  colorTheme = "purple", 
+  showFeatures = true, 
+  showProcess = true 
+}: FeaturesSectionProps) {
+  const primaryColorClass = colorTheme === "purple" ? "naga-purple" : "naga-green";
+  const primaryBorderClass = colorTheme === "purple" ? "hover:border-naga-purple" : "hover:border-naga-green";
+  const primaryBgHoverClass = colorTheme === "purple" ? "group-hover:bg-naga-purple" : "group-hover:bg-naga-green";
+  const primaryTextClass = colorTheme === "purple" ? "text-naga-purple" : "text-naga-green";
 
   const features = [
     {
       title: "Calidad inigualable",
       desc: "Obtenga una calidad inigualable en cada transferencia DTF con materiales de primera calidad y artesanía experta.",
-      icon: <CheckCircle2 className={`text-${primaryColor}`} size={24} />
+      icon: <CheckCircle2 size={22} />
     },
     {
       title: "Sin mínimos",
       desc: "Ordene exactamente lo que necesita sin cantidad mínima requerida para ninguna compra.",
-      icon: <Layers className={`text-${primaryColor}`} size={24} />
+      icon: <Layers size={22} />
     },
     {
       title: "Envío súper rápido",
       desc: "Reciba sus pedidos rápidamente con nuestro servicio de envío y entrega confiable y súper rápido.",
-      icon: <Zap className={`text-${primaryColor}`} size={24} />
+      icon: <Zap size={22} />
     },
     {
       title: "Gama de colores vibrantes",
       desc: "Disfrute de colores vivos y detalles nítidos con nuestra amplia gama de colores en cada transferencia.",
-      icon: <Palette className={`text-${primaryColor}`} size={24} />
+      icon: <Palette size={22} />
     },
     {
       title: "Aplicación fácil",
       desc: "Aplique transferencias sin esfuerzo con nuestro sencillo proceso de presionar y despegar para obtener resultados perfectos.",
-      icon: <MousePointer2 className={`text-${primaryColor}`} size={24} />
+      icon: <MousePointer2 size={22} />
     },
     {
-      title: "Durabilidad duradera",
-      desc: "Nuestros transfers resisten el desgaste y los lavados, manteniendo su calidad en el tiempo.",
-      icon: <ShieldCheck className={`text-${primaryColor}`} size={24} />
+      title: "Máxima Resistencia",
+      desc: "Nuestros transfers resisten el desgaste y los lavados, manteniendo su calidad y vibrancia en el tiempo.",
+      icon: <ShieldCheck size={22} />
     }
   ];
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
+
   return (
-    <section className="py-24 bg-naga-cotton">
+    <section className={`py-16 ${showFeatures ? 'bg-naga-cotton' : 'bg-white'}`}>
       <div className="container mx-auto px-4">
-        {/* Title */}
-        <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-black text-black tracking-tighter uppercase italic">
-            El líder en <span className={`text-${primaryColor}`}>transferencias DTF</span> personalizadas
-          </h2>
-        </div>
-
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-32">
-          {features.map((f, i) => (
-            <div
-              key={i}
-              className={`p-8 rounded-3xl bg-white border border-gray-100 hover:border-${primaryColor}/30 transition-all group shadow-sm`}
-            >
-              <div className={`w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center mb-6 shadow-sm group-hover:bg-${primaryColor} group-hover:text-white transition-colors`}>
-                {f.icon}
-              </div>
-              <h3 className="text-xl font-black text-black mb-4 uppercase tracking-tight">{f.title}</h3>
-              <p className="text-gray-600 font-medium leading-relaxed">{f.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Process Section */}
-        <div className="bg-white border border-gray-100 rounded-[3rem] p-12 lg:p-20 relative overflow-hidden shadow-xl">
-          <div className={`absolute top-0 right-0 w-64 h-64 bg-${primaryColor}/5 blur-[100px] rounded-full`} />
-          
-          <div className="relative z-10">
+        {showFeatures && (
+          <div className="mb-24">
+            {/* Title */}
             <div className="text-center mb-16">
-              <h3 className="text-3xl md:text-4xl font-black text-black uppercase tracking-tighter mb-4">
-                El proceso <span className={`text-${primaryColor}`}>Nagasapi</span>
-              </h3>
-              <p className="text-gray-500 font-bold uppercase tracking-[0.2em] text-sm">
-                Más rápido. Más sencillo. Satisfacción garantizada.
-              </p>
+              <h2 className="text-3xl md:text-4xl font-black text-black tracking-tighter uppercase italic">
+                El líder en <span className={`${primaryTextClass}`}>transferencias DTF</span> personalizadas
+              </h2>
             </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Features Grid */}
             <motion.div 
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              variants={container}
+              initial="hidden"
+              whileInView="show"
               viewport={{ once: true }}
-              className="flex gap-6 items-start"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
-              <div className={`w-16 h-16 rounded-2xl bg-${primaryColor} flex-shrink-0 flex items-center justify-center text-white shadow-lg shadow-${primaryColor}/20`}>
-                <Upload size={32} />
-              </div>
-                <div>
-                  <h4 className="text-xl font-black text-black mb-4 uppercase">Cargue sus diseños y haga su pedido en línea</h4>
-                  <p className="text-gray-600 font-medium leading-relaxed">
-                    Utilice diseños con colores ilimitados, ilustraciones simples o con muchos detalles. Cargue cualquier diseño que desee y lo convertiremos en una transferencia directa a película de alta calidad.
-                  </p>
-                </div>
-              </motion.div>
+              {features.map((f, i) => (
+                <motion.div
+                  key={i}
+                  variants={item}
+                  className={`p-6 rounded-2xl bg-white border-2 border-transparent hover:border-${primaryColorClass} hover:shadow-xl hover:shadow-${primaryColorClass}/5 transition-all group shadow-sm flex flex-col items-center text-center`}
+                >
+                  <div className={`w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center mb-4 shadow-sm ${primaryBgHoverClass} group-hover:text-white transition-all duration-300 ${primaryTextClass}`}>
+                    {f.icon}
+                  </div>
+                  <h3 className="text-lg font-black text-black mb-2 uppercase tracking-tight">{f.title}</h3>
+                  <p className="text-sm text-gray-500 font-medium leading-relaxed">{f.desc}</p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        )}
 
-              <motion.div 
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="flex gap-6 items-start"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-naga-red flex-shrink-0 flex items-center justify-center text-white shadow-lg shadow-naga-red/20">
-                  <Send size={32} />
-                </div>
-                <div>
-                  <h4 className="text-xl font-black text-black mb-4 uppercase">Imprimimos tus transferencias y las enviamos en 24-48 horas</h4>
-                  <p className="text-gray-600 font-medium leading-relaxed">
-                    Realizamos su transferencia utilizando nuestro exclusivo proceso de transferencia DTF. Creando la transferencia directa a película más detallada, de mayor calidad y a todo color que puedas encontrar.
-                  </p>
-                </div>
-              </motion.div>
+        {showProcess && (
+          <div className="bg-white border border-gray-100 rounded-[2.5rem] p-10 lg:p-16 relative overflow-hidden shadow-xl">
+            <div className={`absolute top-0 right-0 w-64 h-64 bg-${primaryColorClass}/5 blur-[100px] rounded-full`} />
+            
+            <div className="relative z-10">
+              <div className="text-center mb-12">
+                <h3 className="text-2xl md:text-3xl font-black text-black uppercase tracking-tighter mb-2">
+                  El proceso <span className={`${primaryTextClass}`}>Nagasapi</span>
+                </h3>
+                <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-xs">
+                  Más rápido. Más sencillo. Satisfacción garantizada.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="flex flex-col sm:flex-row gap-6 items-center sm:items-start text-center sm:text-left"
+                >
+                  <div className={`w-14 h-14 rounded-2xl bg-${primaryColorClass} flex-shrink-0 flex items-center justify-center text-white shadow-lg shadow-${primaryColorClass}/20`}>
+                    <Upload size={28} />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-black text-black mb-3 uppercase leading-tight">Cargue sus diseños y haga su pedido en línea</h4>
+                    <p className="text-sm text-gray-500 font-medium leading-relaxed">
+                      Utilice diseños con colores ilimitados, ilustraciones simples o con muchos detalles. Cargue cualquier diseño que desee y lo convertiremos en una transferencia directa a película de alta calidad.
+                    </p>
+                  </div>
+                </motion.div>
+
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 }}
+                  className="flex flex-col sm:flex-row gap-6 items-center sm:items-start text-center sm:text-left"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-naga-red flex-shrink-0 flex items-center justify-center text-white shadow-lg shadow-naga-red/20">
+                    <Send size={28} />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-black text-black mb-3 uppercase leading-tight">Imprimimos tus transferencias y las enviamos en 24-48 horas</h4>
+                    <p className="text-sm text-gray-500 font-medium leading-relaxed">
+                      Realizamos su transferencia utilizando nuestro exclusivo proceso de transferencia DTF. Creando la transferencia directa a película más detallada, de mayor calidad y a todo color que puedas encontrar.
+                    </p>
+                  </div>
+                </motion.div>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );

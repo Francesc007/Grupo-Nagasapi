@@ -13,46 +13,70 @@ export const PRODUCTS = [
     collection: "cafecito",
     type: "estándar",
     images: ["/Un Cafecito.webp"],
-    colors: ["Negro", "Blanco", "Café"],
+    colors: ["Negro", "Blanco", "Café", "Azul", "Rojo", "Gris"],
     sizes: ["S", "M", "L", "XL"],
     description: "Un cafecito y una playera pa' llevar."
   },
   {
     id: 2,
-    name: "¿Un Cafecito?",
+    name: "Noticias",
     price: 250,
     category: "playeras",
     collection: "cafecito",
     type: "estándar",
-    images: ["https://images.unsplash.com/photo-1551698618-1dfe5d97d256?q=80&w=800"],
-    colors: ["Blanco", "Negro"],
+    images: ["/Noticias.webp"],
+    colors: ["Blanco", "Negro", "Café", "Azul", "Rojo", "Gris"],
     sizes: ["S", "M", "L", "XL"],
-    description: "Diseño minimalista para amantes del café."
+    description: "Diseño inspirado en la prensa clásica."
+  },
+  {
+    id: 12,
+    name: "Papel Picado",
+    price: 250,
+    category: "playeras",
+    collection: "cafecito",
+    type: "estándar",
+    images: ["/PapelPicado.webp"],
+    colors: ["Blanco", "Negro", "Multicolor", "Café", "Azul", "Rojo", "Gris"],
+    sizes: ["S", "M", "L", "XL"],
+    description: "El folclore mexicano en cada detalle."
   },
   // Colección CDMX
   {
     id: 3,
     name: "Canta y No Llores",
-    price: 210,
+    price: 250,
     category: "playeras",
     collection: "cdmx",
     type: "estándar",
-    images: ["https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?q=80&w=800"],
-    colors: ["Negro", "Azul"],
+    images: ["/CantayNoLlores.webp"],
+    colors: ["Negro", "Azul", "Blanco", "Café", "Rojo", "Gris"],
     sizes: ["S", "M", "L", "XL"],
     description: "Inspirada en el folclore mexicano."
   },
   {
     id: 4,
     name: "Fierro Viejo",
-    price: 224,
+    price: 250,
     category: "playeras",
     collection: "cdmx",
     type: "estándar",
-    images: ["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=800"],
-    colors: ["Blanco", "Gris"],
+    images: ["/FierroViejo.webp"],
+    colors: ["Blanco", "Gris", "Negro", "Café", "Azul", "Rojo"],
     sizes: ["S", "M", "L", "XL"],
     description: "El sonido icónico de la ciudad en tu playera."
+  },
+  {
+    id: 13,
+    name: "CDMX Rojo",
+    price: 250,
+    category: "playeras",
+    collection: "cdmx",
+    type: "estándar",
+    images: ["/CDMX rojo.webp"],
+    colors: ["Rojo", "Blanco", "Negro", "Café", "Azul", "Gris"],
+    sizes: ["S", "M", "L", "XL"],
+    description: "Pasión por la ciudad en cada fibra."
   },
   // Colección Arte
   {
@@ -62,9 +86,9 @@ export const PRODUCTS = [
     category: "playeras",
     collection: "arte",
     type: "premium",
-    images: ["https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=800"],
-    colors: ["Negro"],
-    sizes: ["M", "L", "XL"],
+    images: ["/El_Grito.webp"],
+    colors: ["Negro", "Blanco", "Café", "Azul", "Rojo", "Gris"],
+    sizes: ["S", "M", "L", "XL"],
     description: "Arte clásico con un toque moderno."
   },
   {
@@ -74,9 +98,9 @@ export const PRODUCTS = [
     category: "playeras",
     collection: "arte",
     type: "premium",
-    images: ["https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=800"],
-    colors: ["Blanco"],
-    sizes: ["S", "M", "L"],
+    images: ["/LaPerla.webp"],
+    colors: ["Blanco", "Negro", "Café", "Azul", "Rojo", "Gris"],
+    sizes: ["S", "M", "L", "XL"],
     description: "Elegancia y arte en cada detalle."
   },
   // La Pinche Bolsa - Favoritos
@@ -138,9 +162,44 @@ export const PRODUCTS = [
 ];
 
 export const REVIEWS = [
-  { id: 1, name: "Carlos R.", rating: 5, comment: "¡DTF perfecto en mis playeras! El blanco es súper brillante.", location: "CDMX" },
-  { id: 2, name: "Ana M.", rating: 5, comment: "Excelente calidad y rapidez. Muy recomendados.", location: "Naucalpan" },
-  { id: 3, name: "Miguel L.", rating: 4, comment: "Las bolsas chunchos quedaron geniales para mi marca.", location: "CDMX" },
-  { id: 4, name: "Sofía T.", rating: 5, comment: "El servicio de atención por WhatsApp es de 10.", location: "Puebla" },
-  { id: 5, name: "Jorge V.", rating: 5, comment: "Increíble cómo manejan los degradados finos.", location: "CDMX" },
+  { 
+    id: 1, 
+    name: "Carlos R.", 
+    rating: 5, 
+    comment: "¡DTF perfecto en mis playeras! El blanco es súper brillante.", 
+    location: "CDMX",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&h=200&auto=format&fit=crop"
+  },
+  { 
+    id: 2, 
+    name: "Ana M.", 
+    rating: 5, 
+    comment: "Excelente calidad y rapidez. Muy recomendados.", 
+    location: "Naucalpan",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&h=200&auto=format&fit=crop"
+  },
+  { 
+    id: 3, 
+    name: "Miguel L.", 
+    rating: 4, 
+    comment: "Las bolsas chunchos quedaron geniales para mi marca.", 
+    location: "CDMX",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&h=200&auto=format&fit=crop"
+  },
+  { 
+    id: 4, 
+    name: "Sofía T.", 
+    rating: 5, 
+    comment: "El servicio de atención por WhatsApp es de 10.", 
+    location: "Puebla",
+    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&h=200&auto=format&fit=crop"
+  },
+  { 
+    id: 5, 
+    name: "Jorge V.", 
+    rating: 5, 
+    comment: "Increíble cómo manejan los degradados finos.", 
+    location: "CDMX",
+    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&h=200&auto=format&fit=crop"
+  },
 ];

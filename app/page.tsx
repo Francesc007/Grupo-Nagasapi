@@ -23,11 +23,6 @@ export default function Home() {
 
         <div className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
           <div className="space-y-8">
-            <div className="inline-flex items-center gap-2 bg-naga-purple/10 text-naga-purple px-4 py-2 rounded-full border border-naga-purple/20 text-sm font-bold tracking-wide uppercase">
-              <Zap size={14} className="fill-current" />
-              Envío Gratis CDMX {">"} $500 MXN
-            </div>
-
             <h1 className="text-5xl lg:text-7xl font-black text-black leading-[1.1] tracking-tighter">
               Nada genérico. <span className="text-naga-purple">Nada al azar.</span>
             </h1>
@@ -35,26 +30,16 @@ export default function Home() {
             <p className="text-xl text-gray-600 max-w-xl leading-relaxed font-medium">
               Transformamos conceptos en merch, bolsas y promocionales que se usan, se ven y representan a tu marca.
             </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link
-                href="/#productos"
-                className="bg-naga-purple hover:bg-black text-white font-black px-8 py-5 rounded-xl flex items-center justify-center gap-2 transition-all group text-lg uppercase shadow-xl shadow-naga-purple/20"
-              >
-                Explora Catálogo
-                <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
-              </Link>
-            </div>
           </div>
 
-          <div className="relative aspect-square lg:aspect-auto lg:h-[620px] w-full mt-12 lg:mt-20 group">
+          <div className="relative aspect-square lg:aspect-auto lg:h-[560px] w-full mt-12 lg:mt-5 group">
             {/* Main Mockup Placeholder */}
             <div className="relative w-full h-full rounded-[2.5rem] overflow-hidden border border-black/5 shadow-2xl bg-white p-4">
               <Image
                 src="/Un Cafecito.webp"
                 alt="Un Cafecito"
                 fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105 rounded-[2rem]"
+                className="object-cover transition-transform duration-700 group-hover:scale-150 rounded-[2rem] scale-125"
                 priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent opacity-40" />
@@ -64,14 +49,14 @@ export default function Home() {
             <motion.div
               animate={{ y: [0, -10, 0] }}
               transition={{ repeat: Infinity, duration: 4 }}
-              className="absolute -top-12 -right-12 w-56 h-56 bg-black border border-white/10 rounded-[2.5rem] p-4 shadow-2xl hidden xl:block overflow-hidden"
+              className="absolute -top-10 -right-10 w-44 h-44 bg-black border border-white/10 rounded-[2rem] p-3 shadow-2xl hidden xl:block"
             >
-              <div className="relative w-full h-full">
+              <div className="relative w-full h-full rounded-[1.2rem] overflow-hidden">
                 <Image
                   src="/Logo.jpg"
                   alt="Logo Secundario"
                   fill
-                  className="object-contain"
+                  className="object-cover"
                 />
               </div>
             </motion.div>
@@ -79,7 +64,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Secciones de Nosotros integradas */}
       <section className="py-24 bg-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -94,19 +78,26 @@ export default function Home() {
                 Unimos creatividad, impresión y producción en un solo lugar para que tu idea no se diluya en el proceso.
               </p>
             </div>
-            <div className="relative aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl">
+            <div className="relative aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl border border-gray-100 bg-gradient-to-br from-naga-purple/5 to-naga-red/5">
               <Image 
-                src="https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=1000" 
-                alt="Creatividad y Producción" 
+                src="/dtf.jpg" 
+                alt="Impresión DTF Nagasapi" 
                 fill 
-                className="object-cover"
+                className="object-cover hover:scale-105 transition-transform duration-700"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+              <div className="absolute bottom-6 left-6 bg-naga-purple/90 backdrop-blur-sm px-5 py-2.5 rounded-xl border border-white/20">
+                <p className="text-white font-black uppercase text-xs tracking-[0.2em] flex items-center gap-2">
+                  <Zap size={14} className="text-yellow-300" />
+                  Impresión DTF de Alta Definición
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <FeaturesSection colorTheme="purple" />
+      <FeaturesSection colorTheme="purple" showProcess={false} />
 
       {/* Soluciones */}
       <section className="py-24 bg-gray-50">
@@ -164,17 +155,19 @@ export default function Home() {
               {
                 name: "Chunchos",
                 desc: "Nuestra línea de playeras con tecnología DTF de alta definición. Diseños que se sienten y se ven increíbles.",
-                img: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?q=80&w=800",
-                link: "/chunchos"
+                img: "/El_Grito.webp",
+                link: "/chunchos",
+                reverse: false
               },
               {
                 name: "La Pinche Bolsa",
                 desc: "Bolsas personalizadas y colecciones propias con carácter, diseño y funcionalidad.",
-                img: "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=800",
-                link: "/bolsas"
+                img: "/México Mágico.png",
+                link: "/bolsas",
+                reverse: true
               }
             ].map((brand, i) => (
-              <div key={i} className="flex flex-col lg:flex-row gap-12 items-center group">
+              <div key={i} className={`flex flex-col ${brand.reverse ? 'lg:flex-row-reverse' : 'lg:flex-row'} gap-12 items-center group`}>
                 <div className="w-full lg:w-1/2 aspect-[16/9] relative rounded-[2.5rem] overflow-hidden shadow-xl">
                   <Image src={brand.img} alt={brand.name} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent opacity-40" />

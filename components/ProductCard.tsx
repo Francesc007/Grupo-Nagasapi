@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Plus, ShoppingCart, Upload, ChevronDown } from "lucide-react";
+import { Plus, ShoppingCart, Upload, ChevronDown, Check } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
 interface ProductProps {
@@ -19,6 +19,17 @@ interface ProductProps {
   };
   colorTheme?: "purple" | "green" | "brown";
 }
+
+const COLOR_MAP: Record<string, string> = {
+  "Negro": "#000000",
+  "Blanco": "#FFFFFF",
+  "Café": "#4B3621",
+  "Azul": "#1E40AF",
+  "Rojo": "#FF1744",
+  "Gris": "#9CA3AF",
+  "Natural": "#F5F0E6",
+  "Multicolor": "conic-gradient(from 0deg, red, yellow, lime, aqua, blue, magenta, red)",
+};
 
 export default function ProductCard({ product, colorTheme = "purple" }: ProductProps) {
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
@@ -87,37 +98,53 @@ export default function ProductCard({ product, colorTheme = "purple" }: ProductP
           <p className={`text-${primaryColor} font-black text-xl`}>${product.price} MXN</p>
         </div>
 
-        {/* Options */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="relative">
-            <select
-              value={selectedColor}
-              onChange={(e) => setSelectedColor(e.target.value)}
-              className={`w-full bg-gray-50 border border-gray-100 text-[10px] text-gray-600 font-bold rounded-lg py-2 pl-3 pr-8 appearance-none focus:ring-1 focus:ring-${primaryColor} cursor-pointer uppercase tracking-wider`}
-            >
-              {product.colors.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-            <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+        {/* Color Bubbles */}
+        <div className="space-y-2">
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Color: <span className="text-gray-900">{selectedColor}</span></p>
+          <div className="flex flex-wrap gap-2">
+            {product.colors.map((c) => (
+              <button
+                key={c}
+                onClick={() => setSelectedColor(c)}
+                className={`w-6 h-6 rounded-full border-2 transition-all flex items-center justify-center ${
+                  selectedColor === c ? "border-naga-purple scale-110 shadow-sm" : "border-transparent hover:scale-105"
+                }`}
+                title={c}
+                style={{ 
+                  background: COLOR_MAP[c] || "#CCCCCC",
+                  border: selectedColor === c ? `2px solid ${COLOR_MAP[c] === '#FFFFFF' ? '#E5E7EB' : '#000000'}` : '2px solid transparent'
+                }}
+              >
+                {selectedColor === c && (
+                  <Check size={12} className={c === "Blanco" || c === "Natural" ? "text-black" : "text-white"} />
+                )}
+              </button>
+            ))}
           </div>
+        </div>
 
-          <div className="relative">
-            <select
-              value={selectedSize}
-              onChange={(e) => setSelectedSize(e.target.value)}
-              className={`w-full bg-gray-50 border border-gray-100 text-[10px] text-gray-600 font-bold rounded-lg py-2 pl-3 pr-8 appearance-none focus:ring-1 focus:ring-${primaryColor} cursor-pointer uppercase tracking-wider`}
-            >
-              {product.sizes.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-            <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+        {/* Size Selection */}
+        <div className="relative">
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Talla</p>
+          <div className="grid grid-cols-4 gap-2">
+            {product.sizes.map((s) => (
+              <button
+                key={s}
+                onClick={() => setSelectedSize(s)}
+                className={`py-2 text-[10px] font-bold rounded-lg border transition-all ${
+                  selectedSize === s 
+                    ? `bg-${primaryColor} border-${primaryColor} text-white shadow-sm` 
+                    : "bg-gray-50 border-gray-100 text-gray-600 hover:border-gray-300"
+                }`}
+              >
+                {s}
+              </button>
+            ))}
           </div>
         </div>
 
         {/* Upload Sim */}
-        <button className="w-full bg-gray-50 hover:bg-gray-100 border border-gray-100 text-gray-500 text-[10px] font-black py-2 rounded-lg flex items-center justify-center gap-2 transition-all uppercase tracking-widest">
+        <button className="w-full bg-gray-50 hover:bg-gray-100 border border-gray-100 text-gray-500 text-[10px] font-black py-2 rounded-lg flex items-center justify-center gap-2 transition-all uppercase tracking-widest mt-auto">
           <Upload size={14} className={`text-${primaryColor}`} />
           Sube tu diseño
         </button>
