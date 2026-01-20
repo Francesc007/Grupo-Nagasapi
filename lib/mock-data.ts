@@ -1,234 +1,139 @@
 export const CATEGORIES = [
-  { id: 'playeras', name: 'Playeras', description: 'DTF full color', examples: 'Clásica, Oversize', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=800&auto=format&fit=crop' },
-  { id: 'bolsas', name: 'Bolsas Chunchos', description: 'Ecológicas personalizadas', examples: 'Tote, Intro pack', image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=800&auto=format&fit=crop' },
-  { id: 'hoodies', name: 'Hoodies/Gorras', description: 'Premium prints', examples: 'Urbanas, Sport', image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=800&auto=format&fit=crop' },
-  { id: 'custom', name: '+Custom', description: 'Cualquier producto', examples: 'Sube tu diseño', image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=800&auto=format&fit=crop' },
+  { id: 'playeras', name: 'Chunchos', description: 'DTF full color', examples: 'Clásica, Oversize', image: '/Un Cafecito.webp' },
+  { id: 'bolsas', name: 'La Pinche Bolsa', description: 'Ecológicas personalizadas', examples: 'Tote, Intro pack', image: '/bolsa.png' },
 ];
 
 export const PRODUCTS = [
-  // Playeras DTF
+  // Playeras DTF (Chunchos) - Colección Cafecito
   {
     id: 1,
-    name: "Playera Clásica Nagasapi DTF",
+    name: "Cafecito de Triciclo",
     price: 250,
     category: "playeras",
+    collection: "cafecito",
     type: "estándar",
-    images: ["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=500"],
-    colors: ["Negro", "Blanco", "Rojo", "Verde"],
-    sizes: ["S", "M", "L", "XL", "2XL", "3XL"],
-    description: "Impresión DTF de alta calidad en algodón 100%."
+    images: ["/Un Cafecito.webp"],
+    colors: ["Negro", "Blanco", "Café"],
+    sizes: ["S", "M", "L", "XL"],
+    description: "Un cafecito y una playera pa' llevar."
   },
   {
     id: 2,
-    name: "Playera Oversize Premium",
-    price: 450,
+    name: "¿Un Cafecito?",
+    price: 250,
     category: "playeras",
-    type: "premium",
-    images: ["https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=500"],
-    colors: ["Negro", "Blanco"],
-    sizes: ["M", "L", "XL"],
-    description: "Corte moderno con impresión DTF tácto cero."
+    collection: "cafecito",
+    type: "estándar",
+    images: ["https://images.unsplash.com/photo-1551698618-1dfe5d97d256?q=80&w=800"],
+    colors: ["Blanco", "Negro"],
+    sizes: ["S", "M", "L", "XL"],
+    description: "Diseño minimalista para amantes del café."
   },
+  // Colección CDMX
   {
     id: 3,
-    name: "Playera Streetwear CDMX",
-    price: 350,
+    name: "Canta y No Llores",
+    price: 210,
     category: "playeras",
+    collection: "cdmx",
     type: "estándar",
-    images: ["https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?q=80&w=500"],
-    colors: ["Negro", "Azul", "Gris"],
+    images: ["https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?q=80&w=800"],
+    colors: ["Negro", "Azul"],
     sizes: ["S", "M", "L", "XL"],
-    description: "Diseño urbano con colores vibrantes."
+    description: "Inspirada en el folclore mexicano."
   },
   {
     id: 4,
-    name: "Playera Deportiva Tech",
-    price: 300,
+    name: "Fierro Viejo",
+    price: 224,
     category: "playeras",
+    collection: "cdmx",
     type: "estándar",
-    images: ["https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=500"],
-    colors: ["Blanco", "Negro", "Rojo"],
+    images: ["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=800"],
+    colors: ["Blanco", "Gris"],
     sizes: ["S", "M", "L", "XL"],
-    description: "Tela dry-fit con DTF elástico."
+    description: "El sonido icónico de la ciudad en tu playera."
   },
+  // Colección Arte
   {
     id: 5,
-    name: "Playera Nagasapi Edición Limitada",
-    price: 600,
+    name: "El Grito",
+    price: 350,
     category: "playeras",
+    collection: "arte",
     type: "premium",
-    images: ["https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=500"],
+    images: ["https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=800"],
     colors: ["Negro"],
-    sizes: ["S", "M", "L", "XL", "2XL"],
-    description: "Acabado de lujo con detalles en neón."
+    sizes: ["M", "L", "XL"],
+    description: "Arte clásico con un toque moderno."
   },
-  // Bolsas Chunchos
+  {
+    id: 11,
+    name: "La Perla",
+    price: 350,
+    category: "playeras",
+    collection: "arte",
+    type: "premium",
+    images: ["https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=800"],
+    colors: ["Blanco"],
+    sizes: ["S", "M", "L"],
+    description: "Elegancia y arte en cada detalle."
+  },
+  // La Pinche Bolsa - Favoritos
   {
     id: 6,
-    name: "Tote Bag Eco Nagasapi",
-    price: 180,
+    name: "Noche Estrellada",
+    price: 150,
     category: "bolsas",
     type: "estándar",
-    images: ["https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=500"],
-    colors: ["Natural", "Negro"],
+    images: ["/bolsa.png"],
+    colors: ["Natural"],
     sizes: ["Única"],
-    description: "Bolsa de manta con impresión DTF resistente."
+    description: "Bolsa de manta premium con acabado sustentable."
   },
   {
     id: 7,
-    name: "Chuncho Intro Pack (3 piezas)",
-    price: 450,
+    name: "Amanecer",
+    price: 150,
     category: "bolsas",
     type: "premium",
-    images: ["https://images.unsplash.com/photo-1597484662317-9bd76320f762?q=80&w=500"],
+    images: ["/Amanecer bolsa.png"],
     colors: ["Natural"],
     sizes: ["Única"],
-    description: "Pack ecológico para tus compras."
+    description: "Inspirada en los colores del alba en la ciudad."
   },
   {
     id: 8,
-    name: "Bolsa Premium 'La Pinche'",
-    price: 280,
+    name: "Leonardo",
+    price: 150,
     category: "bolsas",
     type: "premium",
-    images: ["https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?q=80&w=500"],
-    colors: ["Negro", "Verde Neón"],
-    sizes: ["Grande"],
-    description: "Diseño exclusivo con mockups realistas."
+    images: ["/Leonardo.png"],
+    colors: ["Natural"],
+    sizes: ["Única"],
+    description: "Un toque de arte clásico en tu bolsa diaria."
   },
   {
     id: 9,
-    name: "Mini Chuncho Portable",
-    price: 120,
+    name: "Acrostico",
+    price: 150,
     category: "bolsas",
     type: "estándar",
-    images: ["https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=500"],
-    colors: ["Azul", "Rojo"],
-    sizes: ["Pequeña"],
-    description: "Ideal para accesorios pequeños."
+    images: ["/Acrostico bolsa.png"],
+    colors: ["Natural"],
+    sizes: ["Única"],
+    description: "Diseño tipográfico con identidad propia."
   },
   {
     id: 10,
-    name: "Bolsa de Playa Reforzada",
-    price: 350,
+    name: "Autorretrato",
+    price: 150,
     category: "bolsas",
-    type: "estándar",
-    images: ["https://images.unsplash.com/photo-1591348113547-6ad874995971?q=80&w=500"],
-    colors: ["Blanco", "Beige"],
-    sizes: ["XL"],
-    description: "Soporta hasta 15kg con estilo."
-  },
-  // Hoodies / Gorras
-  {
-    id: 11,
-    name: "Hoodie Nagasapi Urban",
-    price: 750,
-    category: "hoodies",
     type: "premium",
-    images: ["https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=500"],
-    colors: ["Negro", "Gris Oscuro"],
-    sizes: ["S", "M", "L", "XL"],
-    description: "Sudadera premium con DTF de gran formato."
-  },
-  {
-    id: 12,
-    name: "Gorra Snapback Nagasapi",
-    price: 320,
-    category: "hoodies",
-    type: "estándar",
-    images: ["https://images.unsplash.com/photo-1588850561407-ed78c282e89b?q=80&w=500"],
-    colors: ["Negro/Verde", "Negro/Rojo"],
-    sizes: ["Ajustable"],
-    description: "Visera plana con logo en DTF 3D."
-  },
-  {
-    id: 13,
-    name: "Sudadera Crop-Top",
-    price: 550,
-    category: "hoodies",
-    type: "estándar",
-    images: ["https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=500"],
-    colors: ["Rosa", "Blanco"],
-    sizes: ["S", "M", "L"],
-    description: "Corte femenino con impresiones artísticas."
-  },
-  {
-    id: 14,
-    name: "Gorra Trucker Retro",
-    price: 280,
-    category: "hoodies",
-    type: "estándar",
-    images: ["https://images.unsplash.com/photo-1572427364737-c73179450c7a?q=80&w=500"],
-    colors: ["Azul/Blanco", "Negro/Blanco"],
-    sizes: ["Ajustable"],
-    description: "Estilo clásico con DTF frontal."
-  },
-  {
-    id: 15,
-    name: "Hoodie Zip-Up Pro",
-    price: 850,
-    category: "hoodies",
-    type: "premium",
-    images: ["https://images.unsplash.com/photo-1578932750294-f5075e85f44a?q=80&w=500"],
-    colors: ["Negro", "Marino"],
-    sizes: ["M", "L", "XL", "2XL"],
-    description: "Cierre metálico y DTF en espalda."
-  },
-  // Custom
-  {
-    id: 16,
-    name: "Personalizado DTF A4",
-    price: 200,
-    category: "custom",
-    type: "estándar",
-    images: ["https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=500"],
-    colors: ["Cualquiera"],
-    sizes: ["A4"],
-    description: "Sube tu diseño y nosotros lo imprimimos."
-  },
-  {
-    id: 17,
-    name: "Hoja DTF Metro Lineal",
-    price: 650,
-    category: "custom",
-    type: "premium",
-    images: ["https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=500"],
-    colors: ["Cualquiera"],
-    sizes: ["60cm x 100cm"],
-    description: "Máximo rendimiento para tu negocio."
-  },
-  {
-    id: 18,
-    name: "Kit Emprendedor DTF",
-    price: 1500,
-    category: "custom",
-    type: "premium",
-    images: ["https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=500"],
-    colors: ["Cualquiera"],
-    sizes: ["Varios"],
-    description: "Incluye 3 metros de DTF y muestras."
-  },
-  {
-    id: 19,
-    name: "DTF Texturizado Especial",
-    price: 400,
-    category: "custom",
-    type: "premium",
-    images: ["https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=500"],
-    colors: ["Oro", "Plata", "Reflejante"],
-    sizes: ["A3"],
-    description: "Acabados especiales para diseños únicos."
-  },
-  {
-    id: 20,
-    name: "Parche DTF Termoadhesivo",
-    price: 80,
-    category: "custom",
-    type: "estándar",
-    images: ["https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=500"],
-    colors: ["Multicolor"],
-    sizes: ["10x10cm"],
-    description: "Fácil de aplicar con plancha casera."
+    images: ["/Autorretrato.png"],
+    colors: ["Natural"],
+    sizes: ["Única"],
+    description: "Expresión pura en cada trazo de loneta."
   },
 ];
 

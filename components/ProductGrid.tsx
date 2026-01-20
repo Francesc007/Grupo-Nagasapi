@@ -5,10 +5,12 @@ import ProductCard from "./ProductCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { Filter, Search } from "lucide-react";
 
-export default function ProductGrid() {
+export default function ProductGrid({ colorTheme = "purple" }: { colorTheme?: "purple" | "green" }) {
   const [activeCategory, setActiveCategory] = useState("todos");
   const [activeType, setActiveType] = useState("todos");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const primaryColor = colorTheme === "purple" ? "naga-purple" : "naga-green";
 
   const filteredProducts = useMemo(() => {
     return PRODUCTS.filter((p) => {
@@ -20,17 +22,17 @@ export default function ProductGrid() {
   }, [activeCategory, activeType, searchQuery]);
 
   return (
-    <section id="productos" className="py-24 bg-gray-50">
+    <section id="productos" className="py-24 bg-naga-cotton">
       <div className="container mx-auto px-4">
         {/* Header & Filters */}
         <div className="flex flex-col gap-12 mb-16">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
             <h2 className="text-5xl font-black text-black tracking-tighter uppercase italic">
-              Catálogo <span className="text-naga-green">Completo</span>
+              Catálogo <span className={`text-${primaryColor}`}>Completo</span>
             </h2>
             
             {/* Search */}
-            <div className="w-full md:w-96 flex items-center bg-white border border-gray-200 rounded-xl px-4 py-3 focus-within:border-naga-green/50 transition-all shadow-sm">
+            <div className={`w-full md:w-96 flex items-center bg-white border border-gray-200 rounded-xl px-4 py-3 focus-within:border-${primaryColor}/50 transition-all shadow-sm`}>
               <Search size={20} className="text-gray-400" />
               <input
                 type="text"
@@ -50,15 +52,15 @@ export default function ProductGrid() {
             
             {/* Category Filter */}
             <div className="flex bg-white border border-gray-200 p-1 rounded-lg shadow-sm">
-              {["todos", "playeras", "bolsas", "hoodies", "custom"].map((cat) => (
+              {["todos", "playeras", "bolsas"].map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
                   className={`px-4 py-2 rounded-md text-[10px] font-black uppercase tracking-wider transition-all ${
-                    activeCategory === cat ? "bg-naga-green text-white shadow-md shadow-naga-green/20" : "text-gray-400 hover:text-gray-600"
+                    activeCategory === cat ? `bg-${primaryColor} text-white shadow-md shadow-${primaryColor}/20` : "text-gray-400 hover:text-gray-600"
                   }`}
                 >
-                  {cat}
+                  {cat === "playeras" ? "chunchos" : cat}
                 </button>
               ))}
             </div>
@@ -86,7 +88,7 @@ export default function ProductGrid() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
           <AnimatePresence mode="popLayout">
             {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} colorTheme={colorTheme} />
             ))}
           </AnimatePresence>
         </div>
@@ -96,7 +98,7 @@ export default function ProductGrid() {
             <p className="text-gray-500 text-xl font-medium">No encontramos productos con esos filtros.</p>
             <button 
               onClick={() => { setActiveCategory("todos"); setActiveType("todos"); setSearchQuery(""); }}
-              className="mt-4 text-naga-green font-bold hover:underline"
+              className={`mt-4 text-${primaryColor} font-bold hover:underline`}
             >
               Limpiar filtros
             </button>

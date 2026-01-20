@@ -141,8 +141,8 @@ export default function AdminDashboard() {
                 <AreaChart data={data}>
                   <defs>
                     <linearGradient id="colorVentas" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#6D6AFE" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#6D6AFE" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#16A34A" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#16A34A" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
@@ -162,12 +162,12 @@ export default function AdminDashboard() {
                   />
                   <Tooltip 
                     contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px' }}
-                    itemStyle={{ color: '#6D6AFE' }}
+                    itemStyle={{ color: '#16A34A' }}
                   />
                   <Area 
                     type="monotone" 
                     dataKey="ventas" 
-                    stroke="#6D6AFE" 
+                    stroke="#16A34A" 
                     strokeWidth={4} 
                     fillOpacity={1} 
                     fill="url(#colorVentas)" 

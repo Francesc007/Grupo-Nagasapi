@@ -9,11 +9,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#000000",
-        foreground: "#ffffff",
+        background: "#F5F0E6",
+        foreground: "#1A1A1A",
         naga: {
-          green: "#6D6AFE",
+          purple: "#6D6AFE",
+          green: "#16A34A",
+          brown: "#4B3621",
           red: "#FF1744",
+          cotton: "#F5F0E6",
         },
       },
       fontFamily: {

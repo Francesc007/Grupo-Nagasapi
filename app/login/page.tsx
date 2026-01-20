@@ -9,7 +9,7 @@ export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
-    <main className="min-h-screen bg-white flex items-center justify-center p-4 relative overflow-hidden">
+    <main className="min-h-screen bg-naga-cotton flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background Orbs */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-naga-green/10 blur-[100px] rounded-full -translate-x-1/2 -translate-y-1/2" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-naga-red/5 blur-[100px] rounded-full translate-x-1/2 translate-y-1/2" />
@@ -21,8 +21,8 @@ export default function LoginPage() {
       >
         <div className="text-center mb-10">
           <div className="flex justify-center mb-6">
-            <div className="relative w-20 h-20 overflow-hidden rounded-2xl shadow-lg shadow-naga-green/20">
-              <Image src="/Logo.jpg" alt="Logo" fill className="object-cover" />
+            <div className="relative w-40 h-40 transition-transform">
+              <Image src="/Logo 1.png" alt="Logo" fill className="object-contain" />
             </div>
           </div>
           <h2 className="text-2xl font-black text-black uppercase tracking-tight">
@@ -41,7 +41,7 @@ export default function LoginPage() {
               <input
                 type="email"
                 placeholder="tu@email.com"
-                className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-black focus:border-naga-green focus:ring-1 focus:ring-naga-green outline-none transition-all font-medium"
+                className="w-full bg-white border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-black focus:border-naga-green focus:ring-1 focus:ring-naga-green outline-none transition-all font-medium"
               />
             </div>
           </div>
@@ -53,7 +53,7 @@ export default function LoginPage() {
               <input
                 type="password"
                 placeholder="••••••••"
-                className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-black focus:border-naga-green focus:ring-1 focus:ring-naga-green outline-none transition-all font-medium"
+                className="w-full bg-white border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-black focus:border-naga-green focus:ring-1 focus:ring-naga-green outline-none transition-all font-medium"
               />
             </div>
           </div>

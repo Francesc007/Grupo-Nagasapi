@@ -5,7 +5,7 @@ import { Truck, RotateCcw, ShieldCheck, Mail } from "lucide-react";
 
 export default function PoliticasPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-background">
       <Navbar />
       
       <div className="pt-32 pb-24">
