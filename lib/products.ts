@@ -1,14 +1,14 @@
 import { supabase } from './supabase';
 
 export interface Product {
-  id: string | number;
+  id: number;
   name: string;
   price: number;
   category: string;
   collection?: string;
   discount?: number;
-  stock?: number;
-  type?: string;
+  stock: number;
+  type: string;
   images: string[];
   colors: string[];
   sizes: string[];
