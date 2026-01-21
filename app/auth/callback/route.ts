@@ -32,8 +32,28 @@ export async function GET(request: Request) {
         },
       }
     )
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) {
+    const { data: { session }, error } = await supabase.auth.exchangeCodeForSession(code)
+    if (!error && session) {
+      // Verificar/Crear perfil en la tabla profiles
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', session.user.id)
+        .maybeSingle();
+
+      if (!profile) {
+        console.log("🛠️ Creando perfil para nuevo usuario desde callback:", session.user.email);
+        await supabase
+          .from('profiles')
+          .insert([
+            {
+              id: session.user.id,
+              full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Usuario',
+              is_admin: false
+            }
+          ]);
+      }
+
       const type = searchParams.get('type')
       if (type === 'recovery') {
         return NextResponse.redirect(new URL('/reset-password', request.url))

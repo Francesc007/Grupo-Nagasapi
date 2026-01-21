@@ -68,6 +68,16 @@ export default function LoginPage() {
           }
         });
         if (error) throw error;
+
+        // Intentar crear el perfil inmediatamente si es posible (en caso de que autoconfirmación esté activa)
+        if (data?.user) {
+          await supabase.from('profiles').insert([{
+            id: data.user.id,
+            full_name: fullName,
+            is_admin: false
+          }]).select().maybeSingle();
+        }
+
         setMessage("¡Registro exitoso! Por favor, revisa tu correo para confirmar tu cuenta.");
       } else if (mode === "forgot") {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {

@@ -13,10 +13,12 @@ import {
   ArrowUpRight,
   ChevronDown,
   Upload,
-  X
+  X,
+  CheckCircle2
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Product {
   id: number;
@@ -39,6 +41,20 @@ export default function InventoryPage() {
   const [error, setError] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [productToDelete, setProductToDelete] = useState<number | null>(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => setNotification(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
+
+  const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
+    setNotification({ message, type });
+  };
 
   const [formData, setFormData] = useState({
     name: "",
@@ -125,6 +141,44 @@ export default function InventoryPage() {
     }
   };
 
+  const handleEdit = (product: Product) => {
+    setEditingProduct(product);
+    setFormData({
+      name: product.name,
+      price: product.price.toString(),
+      category: product.category,
+      collection: product.collection || "",
+      description: product.description,
+      stock: product.stock.toString(),
+      discount: product.discount?.toString() || "",
+      image_url: product.images[0] || "",
+      colors: product.colors.join(", "),
+      sizes: product.sizes.join(", ")
+    });
+    setImagePreview(product.images[0] || null);
+    
+    // Desplazar hacia arriba para ver el formulario
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const resetForm = () => {
+    setEditingProduct(null);
+    setFormData({
+      name: "",
+      price: "",
+      category: "playeras",
+      collection: "",
+      description: "",
+      stock: "",
+      discount: "",
+      image_url: "",
+      colors: "",
+      sizes: ""
+    });
+    setImagePreview(null);
+    setError(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -150,7 +204,7 @@ export default function InventoryPage() {
         .filter(s => s !== "")
         .map(s => s.toUpperCase()); // Normalize to Uppercase (S, M, L, XL)
 
-      const productToInsert = {
+      const productData = {
         name: formData.name,
         price: parseFloat(formData.price),
         category: formData.category,
@@ -164,51 +218,56 @@ export default function InventoryPage() {
         type: "estándar" 
       };
 
-      const { error } = await supabase
-        .from("products")
-        .insert([productToInsert]);
+      if (editingProduct) {
+        // Update existing product
+        const { error } = await supabase
+          .from("products")
+          .update(productData)
+          .eq("id", editingProduct.id);
 
-      if (error) throw error;
+        if (error) throw error;
+        showNotification("¡Producto actualizado correctamente!", "success");
+      } else {
+        // Insert new product
+        const { error } = await supabase
+          .from("products")
+          .insert([productData]);
+
+        if (error) throw error;
+        showNotification("¡Producto publicado correctamente!", "success");
+      }
 
       fetchProducts();
-      alert("¡Producto publicado correctamente!");
-      
-      // Reset form but stay on page
-      setFormData({
-        name: "",
-        price: "",
-        category: "playeras",
-        collection: "",
-        description: "",
-        stock: "",
-        discount: "",
-        image_url: "",
-        colors: "",
-        sizes: ""
-      });
-      setImagePreview(null);
+      resetForm();
     } catch (err: any) {
-      console.error("Error creating product:", err);
-      setError(err.message || "Error al crear el producto.");
+      console.error("Error saving product:", err);
+      setError(err.message || "Error al guardar el producto.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("¿Estás seguro de que deseas eliminar este producto permanentemente?")) return;
+    setProductToDelete(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!productToDelete) return;
 
     try {
       const { error } = await supabase
         .from("products")
         .delete()
-        .eq("id", id);
+        .eq("id", productToDelete);
 
       if (error) throw error;
-      setProducts(products.filter(p => p.id !== id));
+      setProducts(products.filter(p => p.id !== productToDelete));
+      showNotification("Producto eliminado correctamente", "success");
     } catch (err: any) {
       console.error("Error deleting product:", err);
-      alert("No se pudo eliminar el producto.");
+      showNotification("No se pudo eliminar el producto", "error");
+    } finally {
+      setProductToDelete(null);
     }
   };
 
@@ -232,12 +291,27 @@ export default function InventoryPage() {
 
       {/* Form Section */}
       <section className="bg-black/40 border border-white/5 p-12 rounded-[3.5rem] backdrop-blur-3xl shadow-2xl relative overflow-hidden group">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-naga-purple via-naga-red to-transparent opacity-30 group-hover:opacity-100 transition-opacity duration-700" />
+        <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${editingProduct ? 'from-naga-purple to-blue-500' : 'from-naga-purple via-naga-red to-transparent'} opacity-30 group-hover:opacity-100 transition-opacity duration-700`} />
         
-        <h2 className="text-2xl font-black uppercase mb-12 flex items-center gap-4 italic tracking-tighter">
-          <Plus className="text-naga-purple" size={28} /> 
-          Publicar Nuevo Producto
-        </h2>
+        <div className="flex justify-between items-center mb-12">
+          <h2 className="text-2xl font-black uppercase flex items-center gap-4 italic tracking-tighter">
+            {editingProduct ? (
+              <Edit3 className="text-naga-purple" size={28} />
+            ) : (
+              <Plus className="text-naga-purple" size={28} />
+            )}
+            {editingProduct ? `Editando: ${editingProduct.name}` : "Publicar Nuevo Producto"}
+          </h2>
+          
+          {editingProduct && (
+            <button 
+              onClick={resetForm}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all text-gray-400 hover:text-white"
+            >
+              <X size={14} /> Cancelar Edición
+            </button>
+          )}
+        </div>
         
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Left Column - Information (8 columns) */}
@@ -425,7 +499,11 @@ export default function InventoryPage() {
               disabled={isSubmitting}
               className="w-full bg-naga-purple text-white py-6 rounded-2xl font-black uppercase tracking-[0.4em] shadow-2xl shadow-naga-purple/30 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-4 text-xs"
             >
-              {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : "Publicar Producto"}
+              {isSubmitting ? (
+                <Loader2 className="animate-spin" size={20} />
+              ) : (
+                editingProduct ? "Guardar Cambios" : "Publicar Producto"
+              )}
             </button>
           </div>
         </form>
@@ -532,6 +610,7 @@ export default function InventoryPage() {
                     <td className="px-10 py-8 text-right">
                       <div className="flex justify-end gap-4 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-8 group-hover:translate-x-0">
                         <button 
+                          onClick={() => handleEdit(p)}
                           className="p-4 bg-white/5 border border-white/10 rounded-2xl text-gray-500 hover:text-white hover:bg-white/10 transition-all shadow-xl"
                           title="Editar"
                           aria-label="Editar producto"
@@ -555,6 +634,84 @@ export default function InventoryPage() {
           </table>
         </div>
       </section>
+
+      {/* Notifications Portal */}
+      <AnimatePresence>
+        {notification && (
+          <motion.div 
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="fixed bottom-10 right-10 z-[100] min-w-[320px]"
+          >
+            <div className={`p-6 rounded-3xl shadow-2xl backdrop-blur-2xl border flex items-center gap-4 ${
+              notification.type === 'success' 
+                ? 'bg-naga-purple/10 border-naga-purple/20 text-naga-purple' 
+                : 'bg-naga-red/10 border-naga-red/20 text-naga-red'
+            }`}>
+              <div className={`p-3 rounded-2xl ${
+                notification.type === 'success' ? 'bg-naga-purple/10' : 'bg-naga-red/10'
+              }`}>
+                {notification.type === 'success' ? <CheckCircle2 size={24} /> : <AlertCircle size={24} />}
+              </div>
+              <div className="flex-grow">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50 mb-1">Notificación</p>
+                <p className="text-sm font-black uppercase tracking-widest">{notification.message}</p>
+              </div>
+              <button 
+                onClick={() => setNotification(null)} 
+                className="opacity-50 hover:opacity-100 transition-opacity"
+                title="Cerrar notificación"
+                aria-label="Cerrar notificación"
+              >
+                <X size={20} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {productToDelete && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setProductToDelete(null)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-[#0A0A0A] border border-white/10 p-10 rounded-[3rem] shadow-2xl relative z-10 max-w-md w-full"
+            >
+              <div className="p-4 bg-naga-red/10 rounded-3xl w-fit mb-8 text-naga-red">
+                <AlertCircle size={32} />
+              </div>
+              <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-4">¿Eliminar Producto?</h3>
+              <p className="text-gray-500 font-medium mb-10 leading-relaxed text-sm">Esta acción es permanente y no podrá deshacerse. El producto se borrará del sistema de inventario inmediatamente.</p>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <button 
+                  onClick={() => setProductToDelete(null)}
+                  className="px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  onClick={confirmDelete}
+                  className="px-6 py-4 rounded-2xl bg-naga-red text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-naga-red/20 hover:scale-[1.02] active:scale-95 transition-all"
+                >
+                  Sí, Eliminar
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

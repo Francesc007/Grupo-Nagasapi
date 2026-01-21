@@ -1,8 +1,8 @@
 -- Create tables
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS profiles (
   id UUID REFERENCES auth.users ON DELETE CASCADE,
   full_name TEXT,
-  role TEXT DEFAULT 'user',
+  is_admin BOOLEAN DEFAULT false,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   PRIMARY KEY (id)
 );
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS products (
 
 CREATE TABLE IF NOT EXISTS orders (
   id SERIAL PRIMARY KEY,
-  user_id UUID REFERENCES users(id),
+  user_id UUID REFERENCES profiles(id),
   items JSONB NOT NULL,
   total DECIMAL NOT NULL,
   status TEXT DEFAULT 'pending',

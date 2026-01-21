@@ -38,11 +38,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         console.log("👤 Usuario detectado:", user.email);
 
-        // 2. Consultar valor REAL en la tabla users
+        // 2. Consultar valor REAL en la tabla profiles
         // Usamos maybeSingle() para evitar el error "Cannot coerce" si el perfil aún no existe
         const { data: profile, error: dbError } = await supabase
-          .from('users')
-          .select('role')
+          .from('profiles')
+          .select('is_admin')
           .eq('id', user.id)
           .maybeSingle();
 
@@ -54,14 +54,35 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         if (!profile) {
           console.warn("⚠️ Perfil no encontrado para el usuario:", user.id);
+          
+          // Intentar crear el perfil automáticamente si no existe
+          console.log("🛠️ Intentando crear perfil para:", user.email);
+          const { error: insertError } = await supabase
+            .from('profiles')
+            .insert([
+              { 
+                id: user.id, 
+                full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Usuario',
+                is_admin: false 
+              }
+            ]);
+
+          if (insertError) {
+            console.error("❌ Error al crear perfil automático:", insertError.message);
+            router.push("/");
+            return;
+          }
+
+          console.log("✅ Perfil creado exitosamente.");
+          // Redirigir al inicio ya que el nuevo perfil por defecto es 'user' (is_admin: false)
           router.push("/");
           return;
         }
 
-        console.log("👑 Rol del usuario en DB:", profile.role);
+        console.log("👑 Rol del usuario en DB:", profile.is_admin ? 'admin' : 'user');
 
         // 3. Validación final
-        if (profile.role === 'admin') {
+        if (profile.is_admin === true) {
           console.log("✅ Acceso administrativo concedido.");
           setLoading(false);
         } else {

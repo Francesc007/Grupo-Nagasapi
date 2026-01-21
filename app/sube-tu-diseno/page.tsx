@@ -25,6 +25,7 @@ import ReviewCarousel from "@/components/ReviewCarousel";
 export default function SubeTuDisenoPage() {
   const [currentImg, setCurrentImg] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [notification, setNotification] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const nextImg = () => setCurrentImg((prev) => (prev + 1) % carouselImages.length);
@@ -37,7 +38,8 @@ export default function SubeTuDisenoPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      alert(`Archivo seleccionado: ${file.name}`);
+      setNotification(`Archivo seleccionado: ${file.name}`);
+      setTimeout(() => setNotification(null), 5000);
       // Aquí se implementaría la lógica de subida
     }
   };
@@ -47,7 +49,8 @@ export default function SubeTuDisenoPage() {
     setIsDragging(false);
     const file = e.dataTransfer.files?.[0];
     if (file) {
-      alert(`Archivo soltado: ${file.name}`);
+      setNotification(`Archivo soltado: ${file.name}`);
+      setTimeout(() => setNotification(null), 5000);
       // Aquí se implementaría la lógica de subida
     }
   };
@@ -205,6 +208,21 @@ export default function SubeTuDisenoPage() {
       <FeaturesSection colorTheme="purple" showFeatures={false} showProcess={true} />
       
       <ReviewCarousel />
+
+      {/* Notification Toast */}
+      <AnimatePresence>
+        {notification && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: 20, x: '-50%' }}
+            className="fixed bottom-10 left-1/2 z-50 px-8 py-4 bg-black text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl flex items-center gap-4"
+          >
+            <CheckCircle2 size={18} className="text-naga-purple" />
+            {notification}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <Footer />
     </main>
