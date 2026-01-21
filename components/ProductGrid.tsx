@@ -1,25 +1,36 @@
 "use client";
-import React, { useState, useMemo } from "react";
-import { PRODUCTS } from "@/lib/mock-data";
+import React, { useState, useEffect, useMemo } from "react";
+import { getProducts, Product } from "@/lib/products";
 import ProductCard from "./ProductCard";
 import { motion, AnimatePresence } from "framer-motion";
-import { Filter, Search } from "lucide-react";
+import { Filter, Search, Loader2 } from "lucide-react";
 
 export default function ProductGrid({ colorTheme = "purple" }: { colorTheme?: "purple" | "green" }) {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("todos");
   const [activeType, setActiveType] = useState("todos");
   const [searchQuery, setSearchQuery] = useState("");
 
+  useEffect(() => {
+    async function fetchAll() {
+      const data = await getProducts();
+      setProducts(data);
+      setLoading(false);
+    }
+    fetchAll();
+  }, []);
+
   const primaryColor = colorTheme === "purple" ? "naga-purple" : "naga-green";
 
   const filteredProducts = useMemo(() => {
-    return PRODUCTS.filter((p) => {
+    return products.filter((p) => {
       const matchCat = activeCategory === "todos" || p.category === activeCategory;
       const matchType = activeType === "todos" || p.type === activeType;
       const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
       return matchCat && matchType && matchSearch;
     });
-  }, [activeCategory, activeType, searchQuery]);
+  }, [products, activeCategory, activeType, searchQuery]);
 
   return (
     <section id="productos" className="py-24 bg-naga-cotton">
@@ -86,11 +97,18 @@ export default function ProductGrid({ colorTheme = "purple" }: { colorTheme?: "p
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
-          <AnimatePresence mode="popLayout">
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} colorTheme={colorTheme} />
-            ))}
-          </AnimatePresence>
+          {loading ? (
+            <div className="col-span-full py-20 flex flex-col items-center justify-center gap-4">
+              <Loader2 size={48} className={`text-${primaryColor} animate-spin`} />
+              <p className="text-gray-400 font-black uppercase text-xs tracking-widest">Conectando con Supabase...</p>
+            </div>
+          ) : (
+            <AnimatePresence mode="popLayout">
+              {filteredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} colorTheme={colorTheme} />
+              ))}
+            </AnimatePresence>
+          )}
         </div>
 
         {filteredProducts.length === 0 && (

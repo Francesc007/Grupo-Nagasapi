@@ -20,12 +20,22 @@ export default function Navbar() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { cart } = useCart();
 
   const isBolsasActive = pathname === "/bolsas";
   const isHomeActive = pathname === "/";
   const isChunchosActive = pathname === "/chunchos";
   const isDesignActive = pathname === "/sube-tu-diseno";
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+      setIsOpen(false);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -104,18 +114,20 @@ export default function Navbar() {
 
           {/* Search & Actions */}
           <div className="flex items-center gap-4">
-            <div className={`hidden sm:flex items-center rounded-full px-4 py-1.5 border transition-all ${
+            <form onSubmit={handleSearch} className={`hidden sm:flex items-center rounded-full px-4 py-1.5 border transition-all ${
               isScrolled ? "bg-gray-100 border-gray-200 focus-within:border-naga-green" : "bg-black/5 border-black/10 focus-within:border-naga-green"
             }`}>
               <Search size={18} className={isScrolled ? "text-gray-400" : "text-gray-500"} />
               <input
                 type="text"
                 placeholder="Buscar..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className={`bg-transparent border-none focus:ring-0 text-sm placeholder-gray-500 w-32 lg:w-48 ml-2 ${
                   isScrolled ? "text-black" : "text-black"
                 }`}
               />
-            </div>
+            </form>
             
             <div className="relative">
               {user ? (

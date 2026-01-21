@@ -1,19 +1,31 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
-import { PRODUCTS } from "@/lib/mock-data";
+import { getProducts, Product } from "@/lib/products";
 import { motion } from "framer-motion";
-import { ArrowRight, Coffee, MapPin, Palette, Zap, ShoppingBag } from "lucide-react";
+import { ArrowRight, Coffee, MapPin, Palette, Zap, ShoppingBag, Loader2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
 export default function ChunchosPage() {
-  const cafecitoProducts = PRODUCTS.filter(p => p.collection === "cafecito");
-  const cdmxProducts = PRODUCTS.filter(p => p.collection === "cdmx");
-  const arteProducts = PRODUCTS.filter(p => p.collection === "arte");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      const data = await getProducts({ category: "playeras" });
+      setProducts(data);
+      setLoading(false);
+    }
+    fetchProducts();
+  }, []);
+
+  const cafecitoProducts = products.filter(p => p.collection === "cafecito");
+  const cdmxProducts = products.filter(p => p.collection === "cdmx");
+  const arteProducts = products.filter(p => p.collection === "arte");
 
   return (
     <main className="min-h-screen bg-background text-naga-brown">
@@ -76,9 +88,17 @@ export default function ChunchosPage() {
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
-            {cafecitoProducts.map((product) => (
-              <ProductCard key={product.id} product={product} colorTheme="brown" />
-            ))}
+            {loading ? (
+              <div className="col-span-full py-12 flex justify-center">
+                <Loader2 size={32} className="text-naga-brown animate-spin" />
+              </div>
+            ) : cafecitoProducts.length > 0 ? (
+              cafecitoProducts.map((product) => (
+                <ProductCard key={product.id} product={product} colorTheme="brown" />
+              ))
+            ) : (
+              <p className="col-span-full text-center text-gray-400 font-bold uppercase text-[10px] tracking-widest">No hay productos en esta colección</p>
+            )}
           </div>
         </div>
       </section>
@@ -96,9 +116,17 @@ export default function ChunchosPage() {
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
-            {cdmxProducts.map((product) => (
-              <ProductCard key={product.id} product={product} colorTheme="brown" />
-            ))}
+            {loading ? (
+              <div className="col-span-full py-12 flex justify-center">
+                <Loader2 size={32} className="text-naga-brown animate-spin" />
+              </div>
+            ) : cdmxProducts.length > 0 ? (
+              cdmxProducts.map((product) => (
+                <ProductCard key={product.id} product={product} colorTheme="brown" />
+              ))
+            ) : (
+              <p className="col-span-full text-center text-gray-400 font-bold uppercase text-[10px] tracking-widest">Próximamente más diseños</p>
+            )}
           </div>
         </div>
       </section>
@@ -116,9 +144,17 @@ export default function ChunchosPage() {
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
-            {arteProducts.map((product) => (
-              <ProductCard key={product.id} product={product} colorTheme="brown" />
-            ))}
+            {loading ? (
+              <div className="col-span-full py-12 flex justify-center">
+                <Loader2 size={32} className="text-naga-brown animate-spin" />
+              </div>
+            ) : arteProducts.length > 0 ? (
+              arteProducts.map((product) => (
+                <ProductCard key={product.id} product={product} colorTheme="brown" />
+              ))
+            ) : (
+              <p className="col-span-full text-center text-gray-400 font-bold uppercase text-[10px] tracking-widest">Colección en desarrollo</p>
+            )}
           </div>
         </div>
       </section>

@@ -1,28 +1,27 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
-  BarChart3, 
-  Users, 
   Package, 
   DollarSign, 
-  TrendingUp, 
-  ArrowUpRight, 
-  MoreHorizontal,
-  LayoutDashboard,
-  LogOut
+  Zap,
+  ShoppingCart,
+  Loader2,
+  TrendingUp,
+  ArrowUpRight,
+  Plus,
+  Search,
+  Filter
 } from "lucide-react";
 import { 
-  LineChart, 
-  Line, 
+  AreaChart, 
+  Area, 
   XAxis, 
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer,
-  AreaChart,
-  Area
+  ResponsiveContainer 
 } from "recharts";
-import Link from "next/link";
+import { supabase } from "@/lib/supabase";
 
 const data = [
   { name: "Lun", ventas: 4000 },
@@ -34,177 +33,158 @@ const data = [
   { name: "Dom", ventas: 3490 },
 ];
 
-const stats = [
-  { label: "Ventas Hoy", value: "$10,250", icon: <DollarSign size={20} />, trend: "+12.5%", color: "text-naga-green" },
-  { label: "Órdenes", value: "52", icon: <Package size={20} />, trend: "+3", color: "text-blue-500" },
-  { label: "Usuarios", value: "1,240", icon: <Users size={20} />, trend: "+15", color: "text-purple-500" },
-  { label: "Conversión", value: "3.2%", icon: <TrendingUp size={20} />, trend: "+0.4%", color: "text-naga-red" },
-];
-
-const orders = [
-  { id: "#1024", user: "Carlos Rodriguez", product: "Playera Nagasapi DTF", status: "Completado", total: "$250" },
-  { id: "#1023", user: "Ana Martínez", product: "Chuncho Intro Pack", status: "Pendiente", total: "$450" },
-  { id: "#1022", user: "Miguel López", product: "Hoodie Urban", status: "Enviado", total: "$750" },
-  { id: "#1021", user: "Sofia Torres", product: "Bolsa Premium", status: "Procesando", total: "$280" },
-];
-
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [stats, setStats] = useState({
+    totalProducts: 0,
+    lowStock: 0,
+    totalOrders: 12, 
+    revenue: 4500 
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
+      const { count: productCount } = await supabase
+        .from("products")
+        .select("*", { count: "exact", head: true });
+
+      const { count: lowStockCount } = await supabase
+        .from("products")
+        .select("*", { count: "exact", head: true })
+        .lt("stock", 10);
+
+      setStats(prev => ({
+        ...prev,
+        totalProducts: productCount || 0,
+        lowStock: lowStockCount || 0
+      }));
+    } catch (err) {
+      console.error("Error fetching admin stats:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const statCards = [
+    { label: "Catálogo", value: stats.totalProducts, icon: <Package size={20} />, trend: "Productos", color: "text-naga-purple" },
+    { label: "Stock Bajo", value: stats.lowStock, icon: <Zap size={20} />, trend: "Alertas", color: stats.lowStock > 0 ? "text-naga-red" : "text-naga-green" },
+    { label: "Ingresos", value: `$${stats.revenue}`, icon: <DollarSign size={20} />, trend: "Estimado", color: "text-naga-green" },
+    { label: "Órdenes", value: stats.totalOrders, icon: <ShoppingCart size={20} />, trend: "Hoy", color: "text-blue-500" },
+  ];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <Loader2 className="animate-spin text-naga-purple" size={40} />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-black border-r border-white/5 flex flex-col p-6">
-        <div className="mb-12">
-          <Link href="/" className="text-2xl font-black text-naga-green tracking-tighter italic">
-            Nagasapi
-          </Link>
-          <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Admin Panel</p>
+    <div className="space-y-12">
+      <header className="flex justify-between items-center">
+        <div>
+          <h1 className="text-4xl font-black uppercase tracking-tighter italic">Resumen de <span className="text-naga-purple">Métricas</span></h1>
+          <p className="text-gray-500 text-sm font-medium mt-2">Monitorea el crecimiento de tu tienda en tiempo real.</p>
         </div>
+        <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400">
+          <div className="w-2 h-2 rounded-full bg-naga-green animate-pulse" />
+          En Vivo
+        </div>
+      </header>
 
-        <nav className="flex-grow space-y-2">
-          <button 
-            onClick={() => setActiveTab("dashboard")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === "dashboard" ? "bg-naga-green text-black" : "text-gray-400 hover:bg-white/5"}`}
-          >
-            <LayoutDashboard size={18} /> Dashboard
-          </button>
-          <button 
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-400 hover:bg-white/5 transition-all"
-          >
-            <Package size={18} /> Órdenes
-          </button>
-          <button 
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-400 hover:bg-white/5 transition-all"
-          >
-            <BarChart3 size={18} /> Estadísticas
-          </button>
-          <button 
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-400 hover:bg-white/5 transition-all"
-          >
-            <Users size={18} /> Clientes
-          </button>
-        </nav>
-
-        <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-naga-red hover:bg-naga-red/10 transition-all mt-auto">
-          <LogOut size={18} /> Cerrar Sesión
-        </button>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-grow p-10 overflow-y-auto">
-        <header className="flex justify-between items-center mb-10">
-          <div>
-            <h1 className="text-3xl font-black text-white uppercase tracking-tighter">Resumen de Ventas</h1>
-            <p className="text-gray-500 text-sm">Bienvenido de nuevo, Admin.</p>
-          </div>
-          <div className="flex gap-4">
-            <button className="bg-neutral-900 border border-white/5 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest">
-              Exportar CSV
-            </button>
-            <button className="bg-naga-green text-black px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest">
-              + Nuevo Producto
-            </button>
-          </div>
-        </header>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          {stats.map((stat, i) => (
-            <div key={i} className="bg-black border border-white/5 p-6 rounded-2xl shadow-xl">
-              <div className="flex justify-between items-start mb-4">
-                <div className={`p-3 rounded-xl bg-white/5 ${stat.color}`}>
-                  {stat.icon}
-                </div>
-                <span className="text-xs font-bold text-naga-green bg-naga-green/10 px-2 py-1 rounded-full flex items-center gap-1">
-                  {stat.trend} <ArrowUpRight size={12} />
-                </span>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {statCards.map((stat, i) => (
+          <div key={i} className="bg-black/40 border border-white/5 p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden group hover:border-white/10 transition-all backdrop-blur-xl">
+            <div className={`absolute top-0 right-0 w-24 h-24 bg-current opacity-[0.03] -translate-y-1/2 translate-x-1/2 rounded-full ${stat.color}`} />
+            <div className="flex justify-between items-start mb-6">
+              <div className={`p-4 rounded-2xl bg-white/5 ${stat.color} shadow-inner`}>
+                {stat.icon}
               </div>
-              <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">{stat.label}</p>
-              <h3 className="text-3xl font-black text-white mt-1">{stat.value}</h3>
+              <span className={`text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full ${stat.color} bg-current/10 border border-current/10`}>
+                {stat.trend}
+              </span>
             </div>
-          ))}
-        </div>
-
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
-          <div className="lg:col-span-2 bg-black border border-white/5 p-8 rounded-2xl shadow-xl">
-            <div className="flex justify-between items-center mb-8">
-              <h3 className="text-white font-bold uppercase tracking-widest text-sm">Ingresos (Últimos 7 días)</h3>
-              <select className="bg-neutral-900 border-none text-[10px] text-gray-400 font-bold rounded-lg py-1 px-3 appearance-none uppercase tracking-wider">
-                <option>Esta Semana</option>
-                <option>Mes Pasado</option>
-              </select>
-            </div>
-            <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data}>
-                  <defs>
-                    <linearGradient id="colorVentas" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#16A34A" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#16A34A" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
-                  <XAxis 
-                    dataKey="name" 
-                    stroke="#444" 
-                    fontSize={12} 
-                    tickLine={false} 
-                    axisLine={false} 
-                  />
-                  <YAxis 
-                    stroke="#444" 
-                    fontSize={12} 
-                    tickLine={false} 
-                    axisLine={false} 
-                    tickFormatter={(value) => `$${value}`}
-                  />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px' }}
-                    itemStyle={{ color: '#16A34A' }}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="ventas" 
-                    stroke="#16A34A" 
-                    strokeWidth={4} 
-                    fillOpacity={1} 
-                    fill="url(#colorVentas)" 
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+            <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.3em] mb-1">{stat.label}</p>
+            <h3 className="text-4xl font-black text-white">{stat.value}</h3>
           </div>
+        ))}
+      </div>
 
-          <div className="bg-black border border-white/5 p-8 rounded-2xl shadow-xl">
-            <h3 className="text-white font-bold uppercase tracking-widest text-sm mb-8">Órdenes Recientes</h3>
-            <div className="space-y-6">
-              {orders.map((order, i) => (
-                <div key={i} className="flex items-center justify-between border-b border-white/5 pb-4 last:border-0 last:pb-0">
-                  <div>
-                    <p className="text-white font-bold text-sm">{order.user}</p>
-                    <p className="text-gray-500 text-[10px] uppercase font-bold tracking-widest">{order.product}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-naga-green font-black text-sm">{order.total}</p>
-                    <p className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full inline-block ${
-                      order.status === "Completado" ? "bg-naga-green/10 text-naga-green" : 
-                      order.status === "Pendiente" ? "bg-yellow-500/10 text-yellow-500" :
-                      "bg-blue-500/10 text-blue-500"
-                    }`}>
-                      {order.status}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              <button className="w-full text-center text-xs font-bold text-gray-500 hover:text-white transition-all uppercase tracking-widest pt-4">
-                Ver todas las órdenes
-              </button>
+      {/* Charts Section */}
+      <div className="bg-black/40 border border-white/5 p-10 rounded-[3.5rem] shadow-2xl backdrop-blur-2xl relative overflow-hidden">
+        <div className="flex justify-between items-center mb-12">
+          <div>
+            <h3 className="text-white font-black uppercase tracking-[0.2em] text-sm italic">Análisis de Ingresos</h3>
+            <p className="text-gray-500 text-[10px] mt-1 uppercase font-bold tracking-[0.3em]">Proyección semanal de ventas</p>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-naga-purple" />
+              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Ventas Totales</span>
             </div>
           </div>
         </div>
-      </main>
+        <div className="h-[400px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={data}>
+              <defs>
+                <linearGradient id="colorVentas" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#9333EA" stopOpacity={0.4}/>
+                  <stop offset="95%" stopColor="#9333EA" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} opacity={0.3} />
+              <XAxis 
+                dataKey="name" 
+                stroke="#444" 
+                fontSize={10} 
+                tickLine={false} 
+                axisLine={false} 
+                className="font-black uppercase"
+                tickMargin={15}
+              />
+              <YAxis 
+                stroke="#444" 
+                fontSize={10} 
+                tickLine={false} 
+                axisLine={false} 
+                className="font-black"
+                tickFormatter={(value) => `$${value}`}
+                tickMargin={15}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: 'rgba(0,0,0,0.95)', 
+                  border: '1px solid rgba(255,255,255,0.1)', 
+                  borderRadius: '24px', 
+                  fontFamily: 'inherit',
+                  backdropFilter: 'blur(20px)',
+                  boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)'
+                }}
+                itemStyle={{ color: '#9333EA', fontWeight: '900', textTransform: 'uppercase', fontSize: '11px', padding: '0' }}
+                labelStyle={{ fontWeight: '900', marginBottom: '8px', color: '#fff', fontSize: '12px', textTransform: 'uppercase' }}
+                cursor={{ stroke: '#9333EA', strokeWidth: 2, strokeDasharray: '5 5' }}
+              />
+              <Area 
+                type="monotone" 
+                dataKey="ventas" 
+                stroke="#9333EA" 
+                strokeWidth={5} 
+                fillOpacity={1} 
+                fill="url(#colorVentas)" 
+                animationDuration={2000}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
     </div>
   );
 }

@@ -17,12 +17,12 @@ const TikTokIcon = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
-export default function Footer() {
+export default function Footer({ variant }: { variant?: "purple" | "green" | "brown" }) {
   const pathname = usePathname();
   
-  // Determine color theme based on current page
-  const isChunchos = pathname === "/chunchos";
-  const isBolsas = pathname === "/bolsas";
+  // Determine color theme based on current page OR passed variant
+  const isChunchos = variant === "brown" || pathname === "/chunchos";
+  const isBolsas = variant === "green" || pathname === "/bolsas";
   
   // Color classes based on page
   const hoverBgClass = isChunchos 
@@ -38,7 +38,7 @@ export default function Footer() {
       : "text-naga-purple";
 
   return (
-    <footer className="bg-naga-cotton border-t border-gray-100 pt-10 pb-6">
+    <footer className="bg-naga-cotton pt-10 pb-6">
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
         {/* Brand */}
         <div className="space-y-3">

@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { Plus, ShoppingCart, Upload, ChevronDown, Check } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
+import Link from "next/link";
+
 interface ProductProps {
   product: {
     id: number;
@@ -61,7 +63,7 @@ export default function ProductCard({ product, colorTheme = "purple" }: ProductP
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image Container */}
-      <div className="relative aspect-square overflow-hidden bg-gray-50">
+      <Link href={`/producto/${product.id}`} className="relative aspect-square overflow-hidden bg-gray-50 cursor-pointer">
         <Image
           src={product.images[0]}
           alt={product.name}
@@ -82,21 +84,25 @@ export default function ProductCard({ product, colorTheme = "purple" }: ProductP
         {/* Quick Add Overlay */}
         <div className={`absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black/20 to-transparent`}>
           <button 
-            onClick={handleAddToCart}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleAddToCart();
+            }}
             className={`w-full bg-${primaryColor} text-white font-black py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-black transition-colors shadow-lg`}
           >
             <ShoppingCart size={18} />
             + CARRITO
           </button>
         </div>
-      </div>
+      </Link>
 
       {/* Content */}
       <div className="p-5 flex-grow flex flex-col gap-4">
-        <div>
+        <Link href={`/producto/${product.id}`} className="hover:opacity-70 transition-opacity">
           <h3 className="text-gray-800 font-bold text-lg mb-1 line-clamp-1">{product.name}</h3>
           <p className={`text-${primaryColor} font-black text-xl`}>${product.price} MXN</p>
-        </div>
+        </Link>
 
         {/* Color Bubbles */}
         <div className="space-y-2">

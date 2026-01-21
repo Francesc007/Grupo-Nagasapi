@@ -1,17 +1,29 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
-import { PRODUCTS } from "@/lib/mock-data";
+import { getProducts, Product } from "@/lib/products";
 import { motion } from "framer-motion";
-import { ArrowRight, Star, Heart, Zap, ShieldCheck, ShoppingBag, MessageCircle } from "lucide-react";
+import { ArrowRight, Star, Heart, Zap, ShieldCheck, ShoppingBag, MessageCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
 export default function LaPincheBolsaPage() {
-  const bolsasProducts = PRODUCTS.filter(p => p.category === "bolsas").slice(0, 5);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      const data = await getProducts({ category: "bolsas" });
+      setProducts(data);
+      setLoading(false);
+    }
+    fetchProducts();
+  }, []);
+
+  const bolsasProducts = products.slice(0, 5);
 
   return (
     <main className="min-h-screen bg-background">
@@ -124,9 +136,63 @@ export default function LaPincheBolsaPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10 mb-16">
-            {bolsasProducts.map((product) => (
-              <ProductCard key={product.id} product={product} colorTheme="green" />
-            ))}
+            {loading ? (
+              <div className="col-span-full py-12 flex justify-center">
+                <Loader2 size={32} className="text-naga-green animate-spin" />
+              </div>
+            ) : bolsasProducts.length > 0 ? (
+              bolsasProducts.map((product) => (
+                <ProductCard key={product.id} product={product} colorTheme="green" />
+              ))
+            ) : (
+              <p className="col-span-full text-center text-gray-400 font-bold uppercase text-[10px] tracking-widest">Cargando colección eco-friendly...</p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Ribbon: Clientes */}
+      <section className="py-8 bg-gray-50 border-y border-gray-100 overflow-hidden">
+        <div className="container mx-auto px-4">
+          <p className="text-center text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-6">Marcas que confían en nosotros</p>
+          
+          <div className="relative flex overflow-hidden">
+            <motion.div
+              className="flex gap-12 md:gap-24 items-center whitespace-nowrap"
+              animate={{
+                x: ["0%", "-50%"]
+              }}
+              transition={{
+                x: {
+                  repeat: Infinity,
+                  repeatType: "loop",
+                  duration: 25,
+                  ease: "linear",
+                },
+              }}
+            >
+              {/* Double the array for seamless loop */}
+              {[...Array(2)].map((_, outerIndex) => (
+                <React.Fragment key={outerIndex}>
+                  {[
+                    { name: "Alba", img: "/Alba.png" },
+                    { name: "Harper Collins", img: "/Harper Collins.png" },
+                    { name: "Mide", img: "/Mide.png" },
+                    { name: "Trillas", img: "/Trillas.png" },
+                    { name: "Inver Medik", img: "/Inver medik.png" }
+                  ].map((client, i) => (
+                    <div key={`${outerIndex}-${i}`} className="relative w-32 h-12 flex-shrink-0 transition-all duration-500 cursor-pointer">
+                      <Image
+                        src={client.img}
+                        alt={client.name}
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                  ))}
+                </React.Fragment>
+              ))}
+            </motion.div>
           </div>
         </div>
       </section>

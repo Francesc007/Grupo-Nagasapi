@@ -1,9 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
-import { Upload, Star, ChevronLeft, ChevronRight, CheckCircle2, Zap } from "lucide-react";
+import { Upload, Star, ChevronLeft, ChevronRight, CheckCircle2, Zap, ShieldCheck, Palette, MousePointer2, Layers } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const carouselImages = [
@@ -20,13 +20,44 @@ const reviews = [
 ];
 
 import FeaturesSection from "@/components/FeaturesSection";
+import ReviewCarousel from "@/components/ReviewCarousel";
 
 export default function SubeTuDisenoPage() {
   const [currentImg, setCurrentImg] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const nextImg = () => setCurrentImg((prev) => (prev + 1) % carouselImages.length);
   const prevImg = () => setCurrentImg((prev) => (prev - 1 + carouselImages.length) % carouselImages.length);
+
+  const handleFileClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      alert(`Archivo seleccionado: ${file.name}`);
+      // Aquí se implementaría la lógica de subida
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      alert(`Archivo soltado: ${file.name}`);
+      // Aquí se implementaría la lógica de subida
+    }
+  };
+
+  const specs = [
+    { title: "Sin mínimos de compra", icon: <Layers size={24} />, color: "bg-blue-50 text-blue-600" },
+    { title: "Revisión técnica gratis", icon: <ShieldCheck size={24} />, color: "bg-green-50 text-green-600" },
+    { title: "Colores vibrantes", icon: <Palette size={24} />, color: "bg-purple-50 text-purple-600" },
+    { title: "Tacto suave e imperceptible", icon: <MousePointer2 size={24} />, color: "bg-orange-50 text-orange-600" }
+  ];
 
   return (
     <main className="min-h-screen bg-background">
@@ -65,98 +96,115 @@ export default function SubeTuDisenoPage() {
 
       {/* Upload & Content Grid */}
       <section className="py-24 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row gap-16 items-start">
+        <div className="container mx-auto px-4 space-y-16">
+          {/* Main Title for both boxes */}
+          <div className="text-center">
+            <h2 className="text-[15px] font-black text-naga-purple uppercase tracking-[0.05em] mb-2">Inspiración y Diseño</h2>
+            <h3 className="text-4xl font-black text-black uppercase tracking-tight italic leading-none">Galería de tus ideas</h3>
+          </div>
+
+          <div className="flex flex-col lg:flex-row gap-16 items-center justify-center">
             
             {/* Left side: Upload area */}
-            <div className="w-full lg:w-1/2 space-y-8">
+            <div className="w-full max-w-sm">
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleFileChange} 
+                className="hidden" 
+                accept=".png,.ai,.psd,.pdf"
+                aria-label="Seleccionar archivo de diseño"
+              />
               <div 
-                className={`relative border-4 border-dashed rounded-[3rem] p-16 flex flex-col items-center justify-center text-center transition-all ${
-                  isDragging ? "border-black bg-gray-50" : "border-gray-100 bg-gray-50"
+                className={`relative aspect-square border-4 border-dashed rounded-[3rem] p-8 flex flex-col items-center justify-center text-center transition-all cursor-pointer group ${
+                  isDragging ? "border-naga-purple bg-purple-50/50" : "border-gray-100 bg-gray-50 hover:bg-gray-100/50 hover:border-gray-200"
                 }`}
                 onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                 onDragLeave={() => setIsDragging(false)}
-                onDrop={(e) => { e.preventDefault(); setIsDragging(false); }}
+                onDrop={handleDrop}
+                onClick={handleFileClick}
               >
-                <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center shadow-lg mb-8">
-                  <Upload size={48} className="text-black" />
+                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg mb-6 group-hover:scale-110 transition-transform duration-500">
+                  <Upload size={32} className="text-black group-hover:text-naga-purple transition-colors" />
                 </div>
-                <h3 className="text-3xl font-black text-black uppercase mb-4">Arrastra tu archivo aquí</h3>
-                <p className="text-gray-500 font-medium mb-10 max-w-sm">Formatos aceptados: PNG, AI, PSD, PDF (300 DPI recomendado)</p>
-                <button className="bg-black text-white px-12 py-5 rounded-xl font-black uppercase tracking-widest hover:bg-naga-purple transition-all shadow-xl text-lg">
+                <h3 className="text-xl font-black text-black uppercase mb-2 tracking-tighter">Arrastra tu archivo aquí</h3>
+                <p className="text-gray-400 text-[10px] font-medium mb-8 max-w-[180px] uppercase tracking-wider">PNG, AI, PSD, PDF (300 DPI)</p>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); handleFileClick(); }}
+                  className="bg-black text-white px-10 py-3 rounded-xl font-black uppercase tracking-widest hover:bg-naga-purple transition-all shadow-xl text-xs hover:scale-105 active:scale-95"
+                >
                   Seleccionar Archivo
                 </button>
               </div>
-
-              {/* Specs */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  "Sin mínimos de compra",
-                  "Revisión técnica gratis",
-                  "Colores vibrantes",
-                  "Tacto suave e imperceptible"
-                ].map((spec, i) => (
-                  <div key={i} className="flex items-center gap-4 p-5 bg-gray-50 rounded-2xl border border-gray-100">
-                    <CheckCircle2 className="text-black" />
-                    <span className="text-sm font-black text-gray-700 uppercase tracking-tight">{spec}</span>
-                  </div>
-                ))}
-              </div>
             </div>
 
-            {/* Right side: Carousel & Reviews */}
-            <div className="w-full lg:w-1/2 space-y-12">
-              <div className="space-y-6">
-                <div className="flex justify-between items-end">
-                  <div>
-                    <h2 className="text-xs font-black text-black uppercase tracking-[0.3em] mb-4">Inspiración</h2>
-                    <h3 className="text-3xl font-black text-black uppercase tracking-tight italic">Galería de trabajos</h3>
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={prevImg} className="w-12 h-12 rounded-xl border border-gray-100 flex items-center justify-center hover:bg-black hover:text-white transition-all shadow-sm"><ChevronLeft size={24}/></button>
-                    <button onClick={nextImg} className="w-12 h-12 rounded-xl border border-gray-100 flex items-center justify-center hover:bg-black hover:text-white transition-all shadow-sm"><ChevronRight size={24}/></button>
-                  </div>
-                </div>
-                <div className="relative aspect-video rounded-[3rem] overflow-hidden shadow-2xl bg-gray-100 border border-gray-100 group">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={currentImg}
-                      initial={{ opacity: 0, scale: 1.1 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ duration: 0.5 }}
-                      className="w-full h-full relative"
-                    >
-                      <Image src={carouselImages[currentImg]} alt="Galería Nagasapi" fill className="object-cover transition-all duration-700 scale-110 group-hover:scale-100" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent" />
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-              </div>
+            {/* Right side: Carousel */}
+            <div className="w-full max-w-sm">
+              <div className="relative aspect-square rounded-[3rem] overflow-hidden shadow-2xl bg-gray-100 border border-gray-100 group">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentImg}
+                    initial={{ opacity: 0, scale: 1.1 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.5 }}
+                    className="w-full h-full relative"
+                  >
+                    <Image src={carouselImages[currentImg]} alt="Galería Nagasapi" fill className="object-cover transition-all duration-700 scale-110 group-hover:scale-100" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent" />
+                  </motion.div>
+                </AnimatePresence>
 
-              {/* Reviews */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-black text-black uppercase tracking-tight italic mb-6">Lo que dicen nuestros clientes</h3>
-                {reviews.map((rev, i) => (
-                  <div key={i} className="p-8 bg-gray-50 border border-gray-100 rounded-[2rem] shadow-sm flex flex-col gap-3 group hover:shadow-lg transition-all">
-                    <div className="flex text-black gap-1">
-                      {[...Array(rev.stars)].map((_, s) => <Star key={s} size={16} fill="currentColor" />)}
-                    </div>
-                    <p className="text-gray-600 text-lg font-medium leading-relaxed italic">"{rev.text}"</p>
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-[2px] bg-black" />
-                      <span className="text-black font-black text-sm uppercase tracking-widest">{rev.name}</span>
-                    </div>
-                  </div>
-                ))}
+                {/* Arrows inside the gallery - Always visible or on hover */}
+                <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 flex justify-between items-center z-10">
+                  <button 
+                    onClick={prevImg} 
+                    aria-label="Ver imagen anterior" 
+                    className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-md border border-gray-100 flex items-center justify-center text-black hover:bg-black hover:text-white transition-all shadow-lg hover:scale-110 active:scale-90"
+                  >
+                    <ChevronLeft size={20}/>
+                  </button>
+                  <button 
+                    onClick={nextImg} 
+                    aria-label="Ver siguiente imagen" 
+                    className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-md border border-gray-100 flex items-center justify-center text-black hover:bg-black hover:text-white transition-all shadow-lg hover:scale-110 active:scale-90"
+                  >
+                    <ChevronRight size={20}/>
+                  </button>
+                </div>
+
+                {/* Status Indicator */}
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10">
+                  <p className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Ejemplos Reales</p>
+                </div>
               </div>
             </div>
+          </div>
 
+          {/* Specs - Full Width Below */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8">
+            {specs.map((spec, i) => (
+              <motion.div 
+                key={i} 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="flex flex-col items-center text-center gap-4 p-8 bg-gray-50/50 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl hover:bg-white hover:border-naga-purple/20 transition-all group"
+              >
+                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-500 ${spec.color}`}>
+                  {React.cloneElement(spec.icon as React.ReactElement<any>, { size: 28 })}
+                </div>
+                <span className="text-xs font-black text-gray-800 uppercase tracking-widest leading-tight">{spec.title}</span>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
       <FeaturesSection colorTheme="purple" showFeatures={false} showProcess={true} />
+      
+      <ReviewCarousel />
 
       <Footer />
     </main>

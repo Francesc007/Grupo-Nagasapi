@@ -55,7 +55,6 @@ export default function CartModal({ isOpen, onClose }: { isOpen: boolean; onClos
                 </div>
                 <div>
                   <h2 className="text-xl font-black text-black uppercase tracking-tighter leading-none">Tus Compras</h2>
-                  <p className="text-[10px] text-naga-purple font-black uppercase tracking-[0.2em] mt-1">Grupo Nagasapi</p>
                 </div>
                 <span className="bg-black text-white text-[10px] font-bold px-2 py-1 rounded-lg ml-2">
                   {cart.length}

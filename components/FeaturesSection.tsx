@@ -77,7 +77,7 @@ export default function FeaturesSection({
   };
 
   return (
-    <section className={`py-16 ${showFeatures ? 'bg-naga-cotton' : 'bg-white'}`}>
+    <section className="py-16 bg-naga-cotton">
       <div className="container mx-auto px-4">
         {showFeatures && (
           <div className="mb-24">
@@ -152,7 +152,7 @@ export default function FeaturesSection({
                   transition={{ delay: 0.2 }}
                   className="flex flex-col sm:flex-row gap-6 items-center sm:items-start text-center sm:text-left"
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-naga-red flex-shrink-0 flex items-center justify-center text-white shadow-lg shadow-naga-red/20">
+                  <div className="w-14 h-14 rounded-2xl bg-white border-2 border-naga-purple flex-shrink-0 flex items-center justify-center text-naga-purple shadow-lg shadow-naga-purple/10">
                     <Send size={28} />
                   </div>
                   <div>

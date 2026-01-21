@@ -143,7 +143,7 @@ export default function Home() {
       </section>
 
       {/* Marcas del Grupo */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-naga-cotton">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mb-16">
             <h2 className="text-4xl md:text-5xl font-black text-black uppercase tracking-tight italic mb-6">Explora nuestras <span className="text-naga-purple">marcas</span></h2>
