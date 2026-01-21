@@ -33,9 +33,19 @@ export async function middleware(request: NextRequest) {
     }
   )
 
+  // Refresh session if expired - this is required for Server Components
+  // and to keep the user logged in.
   const {
     data: { user },
+    error
   } = await supabase.auth.getUser()
+
+  // Si hay un error de Refresh Token, no es crítico para el middleware en sí,
+  // ya que simplemente significa que el usuario no está autenticado o la sesión expiró.
+  if (error) {
+    // Opcional: podrías loguear solo si no es un error de "token no encontrado"
+    // console.error("Middleware auth error:", error.message)
+  }
 
   // Comentamos la protección del middleware temporalmente
   // para que la verificación se haga directamente en el componente (Client Side)
@@ -44,8 +54,6 @@ export async function middleware(request: NextRequest) {
     // ... logic ...
   }
   */
-
-  return response
 
   return response
 }

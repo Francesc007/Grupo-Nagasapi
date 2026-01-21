@@ -18,6 +18,7 @@ interface ProductProps {
     colors: string[];
     sizes: string[];
     description: string;
+    discount?: number;
   };
   colorTheme?: "purple" | "green" | "brown";
 }
@@ -42,10 +43,14 @@ export default function ProductCard({ product, colorTheme = "purple" }: ProductP
   const primaryColor = colorTheme === "purple" ? "naga-purple" : colorTheme === "green" ? "naga-green" : "naga-brown";
 
   const handleAddToCart = () => {
+    const finalPrice = product.discount 
+      ? product.price * (1 - product.discount / 100) 
+      : product.price;
+
     addToCart({
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: finalPrice,
       color: selectedColor,
       size: selectedSize,
       quantity: 1,
@@ -101,7 +106,18 @@ export default function ProductCard({ product, colorTheme = "purple" }: ProductP
       <div className="p-5 flex-grow flex flex-col gap-4">
         <Link href={`/producto/${product.id}`} className="hover:opacity-70 transition-opacity">
           <h3 className="text-gray-800 font-bold text-lg mb-1 line-clamp-1">{product.name}</h3>
-          <p className={`text-${primaryColor} font-black text-xl`}>${product.price} MXN</p>
+          <div className="flex items-center gap-2">
+            <p className={`text-${primaryColor} font-black text-xl`}>
+              ${product.discount 
+                ? (product.price * (1 - product.discount / 100)).toFixed(0) 
+                : product.price} MXN
+            </p>
+            {product.discount && (
+              <p className="text-gray-400 text-sm line-through font-medium">
+                ${product.price}
+              </p>
+            )}
+          </div>
         </Link>
 
         {/* Color Bubbles */}

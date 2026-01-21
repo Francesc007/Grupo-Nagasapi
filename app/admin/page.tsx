@@ -101,9 +101,12 @@ export default function AdminDashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, i) => (
-          <div key={i} className="bg-black/40 border border-white/5 p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden group hover:border-white/10 transition-all backdrop-blur-xl">
-            <div className={`absolute top-0 right-0 w-24 h-24 bg-current opacity-[0.03] -translate-y-1/2 translate-x-1/2 rounded-full ${stat.color}`} />
-            <div className="flex justify-between items-start mb-6">
+          <div key={i} className="bg-black/40 border border-white/5 p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden group hover:border-white/10 hover:bg-white/[0.05] transition-all backdrop-blur-xl">
+            {/* Glossy Shine Effect */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.02] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
+            <div className={`absolute -top-12 -right-12 w-32 h-32 bg-current opacity-[0.03] rounded-full blur-2xl group-hover:opacity-[0.08] transition-opacity ${stat.color}`} />
+            
+            <div className="flex justify-between items-start mb-6 relative z-10">
               <div className={`p-4 rounded-2xl bg-white/5 ${stat.color} shadow-inner`}>
                 {stat.icon}
               </div>

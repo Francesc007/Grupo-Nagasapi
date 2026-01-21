@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
 import { 
   LayoutDashboard, 
   Package, 
@@ -37,23 +38,30 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         console.log("👤 Usuario detectado:", user.email);
 
-        // 2. Consultar valor REAL de is_admin en la tabla profiles
+        // 2. Consultar valor REAL en la tabla users
+        // Usamos maybeSingle() para evitar el error "Cannot coerce" si el perfil aún no existe
         const { data: profile, error: dbError } = await supabase
-          .from('profiles')
-          .select('is_admin')
+          .from('users')
+          .select('role')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
 
-        if (dbError || !profile) {
-          console.error("❌ Perfil no encontrado o error de DB:", dbError?.message);
+        if (dbError) {
+          console.error("❌ Error de base de datos:", dbError.message);
           router.push("/");
           return;
         }
 
-        console.log("👑 Valor de is_admin en DB:", profile.is_admin);
+        if (!profile) {
+          console.warn("⚠️ Perfil no encontrado para el usuario:", user.id);
+          router.push("/");
+          return;
+        }
+
+        console.log("👑 Rol del usuario en DB:", profile.role);
 
         // 3. Validación final
-        if (profile.is_admin === true) {
+        if (profile.role === 'admin') {
           console.log("✅ Acceso administrativo concedido.");
           setLoading(false);
         } else {
@@ -95,8 +103,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Sidebar */}
       <aside className="w-64 bg-black border-r border-white/5 flex flex-col h-screen fixed left-0 top-0 z-30">
         <div className="p-8">
-          <Link href="/" className="text-2xl font-black text-naga-purple tracking-tighter italic">
-            NAGASAPI<span className="text-white/20 not-italic ml-1 text-[10px] uppercase tracking-[0.2em]">Panel</span>
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="relative w-32 h-10 transition-transform group-hover:scale-105">
+              <Image 
+                src="/Logo 1.png" 
+                alt="Nagasapi Logo" 
+                fill 
+                className="object-contain object-left"
+                priority
+              />
+            </div>
+            <span className="text-naga-purple font-black text-[9px] uppercase tracking-[0.2em] bg-naga-purple/10 px-2 py-1 rounded-lg border border-naga-purple/20 shadow-[0_0_15px_rgba(147,51,234,0.1)]">
+              Panel
+            </span>
           </Link>
         </div>
 

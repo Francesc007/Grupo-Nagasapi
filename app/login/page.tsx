@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Mail, Lock, Chrome, ArrowRight, User, ShieldCheck, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { supabase, getSiteUrl } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
 type AuthMode = "login" | "register" | "forgot";
@@ -64,14 +64,14 @@ export default function LoginPage() {
           password,
           options: {
             data: { full_name: fullName },
-            emailRedirectTo: `${getSiteUrl()}/auth/callback`,
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
           }
         });
         if (error) throw error;
         setMessage("¡Registro exitoso! Por favor, revisa tu correo para confirmar tu cuenta.");
       } else if (mode === "forgot") {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${getSiteUrl()}/reset-password`,
+          redirectTo: `${window.location.origin}/reset-password`,
         });
         if (error) throw error;
         setMessage("Se ha enviado un enlace de recuperación a tu correo.");
@@ -87,7 +87,7 @@ export default function LoginPage() {
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${getSiteUrl()}/auth/callback` }
+      options: { redirectTo: `${window.location.origin}/auth/callback` }
     });
     if (error) setError(error.message);
   };

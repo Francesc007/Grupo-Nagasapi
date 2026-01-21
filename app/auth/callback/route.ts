@@ -36,21 +36,22 @@ export async function GET(request: Request) {
     if (!error) {
       const type = searchParams.get('type')
       if (type === 'recovery') {
-        return NextResponse.redirect(`${origin}/reset-password`)
+        return NextResponse.redirect(new URL('/reset-password', request.url))
       }
-      const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
+      
+      const forwardedHost = request.headers.get('x-forwarded-host')
       const isLocalEnv = process.env.NODE_ENV === 'development'
+      
       if (isLocalEnv) {
-        // we can skip check for host on local dev
-        return NextResponse.redirect(`${origin}${next}`)
+        return NextResponse.redirect(new URL(next, request.url))
       } else if (forwardedHost) {
         return NextResponse.redirect(`https://${forwardedHost}${next}`)
       } else {
-        return NextResponse.redirect(`${origin}${next}`)
+        return NextResponse.redirect(new URL(next, request.url))
       }
     }
   }
 
   // return the user to an error page with instructions
-  return NextResponse.redirect(`${origin}/login?error=auth-code-error`)
+  return NextResponse.redirect(new URL('/login?error=auth-code-error', request.url))
 }

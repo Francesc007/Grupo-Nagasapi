@@ -6,6 +6,8 @@ export interface Product {
   price: number;
   category: string;
   collection?: string;
+  discount?: number;
+  stock?: number;
   type?: string;
   images: string[];
   colors: string[];
@@ -50,7 +52,7 @@ export async function getProductById(id: string | number) {
     .from('products')
     .select('*')
     .eq('id', id)
-    .single();
+    .maybeSingle();
 
   if (error) {
     console.error('Error fetching product:', error);

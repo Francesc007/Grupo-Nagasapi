@@ -11,7 +11,9 @@ import {
   AlertCircle,
   Package,
   ArrowUpRight,
-  ChevronDown
+  ChevronDown,
+  Upload,
+  X
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import Image from "next/image";
@@ -21,6 +23,7 @@ interface Product {
   name: string;
   price: number;
   category: string;
+  collection?: string;
   description: string;
   images: string[];
   colors: string[];
@@ -34,11 +37,14 @@ export default function InventoryPage() {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     name: "",
     price: "",
     category: "playeras",
+    collection: "",
     description: "",
     stock: "",
     discount: "",
@@ -71,25 +77,90 @@ export default function InventoryPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ 
+      ...prev, 
+      [name]: value,
+      // Reset collection if category changes and isn't playeras
+      ...(name === "category" && value !== "playeras" ? { collection: "" } : {})
+    }));
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploadingImage(true);
+      setError(null);
+
+      // Preview local
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      // Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `products/${fileName}`;
+
+      const { data, error: uploadError } = await supabase.storage
+        .from('product-images')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get Public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(filePath);
+
+      setFormData(prev => ({ ...prev, image_url: publicUrl }));
+    } catch (err: any) {
+      console.error("Error uploading image:", err);
+      setError("Error al subir la imagen. Asegúrate que el bucket 'products' exista.");
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.image_url) {
+      setError("Por favor, sube una imagen para el producto.");
+      return;
+    }
+
     setIsSubmitting(true);
     setError(null);
 
     try {
+      // Logic for colors and sizes: ensure they are correctly formatted arrays
+      const colorsArray = formData.colors
+        .split(",")
+        .map(c => c.trim())
+        .filter(c => c !== "")
+        .map(c => c.charAt(0).toUpperCase() + c.slice(1).toLowerCase()); // Normalize to Capital Case
+
+      const sizesArray = formData.sizes
+        .split(",")
+        .map(s => s.trim())
+        .filter(s => s !== "")
+        .map(s => s.toUpperCase()); // Normalize to Uppercase (S, M, L, XL)
+
       const productToInsert = {
         name: formData.name,
         price: parseFloat(formData.price),
         category: formData.category,
+        collection: formData.category === "playeras" ? formData.collection : null,
         description: formData.description,
         stock: parseInt(formData.stock) || 0,
         discount: parseFloat(formData.discount) || 0,
         images: [formData.image_url],
-        colors: formData.colors.split(",").map(c => c.trim()).filter(c => c !== ""),
-        sizes: formData.sizes.split(",").map(s => s.trim()).filter(s => s !== ""),
+        colors: colorsArray,
+        sizes: sizesArray,
         type: "estándar" 
       };
 
@@ -99,10 +170,15 @@ export default function InventoryPage() {
 
       if (error) throw error;
 
+      fetchProducts();
+      alert("¡Producto publicado correctamente!");
+      
+      // Reset form but stay on page
       setFormData({
         name: "",
         price: "",
         category: "playeras",
+        collection: "",
         description: "",
         stock: "",
         discount: "",
@@ -110,9 +186,7 @@ export default function InventoryPage() {
         colors: "",
         sizes: ""
       });
-      
-      fetchProducts();
-      alert("¡Producto publicado correctamente!");
+      setImagePreview(null);
     } catch (err: any) {
       console.error("Error creating product:", err);
       setError(err.message || "Error al crear el producto.");
@@ -165,8 +239,9 @@ export default function InventoryPage() {
           Publicar Nuevo Producto
         </h2>
         
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          <div className="space-y-8">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* Left Column - Information (8 columns) */}
+          <div className="lg:col-span-7 space-y-8">
             <div className="space-y-3">
               <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-1">Información Básica</label>
               <input 
@@ -182,15 +257,15 @@ export default function InventoryPage() {
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                rows={4}
-                placeholder="Descripción del producto, materiales, proceso DTF..."
+                rows={3}
+                placeholder="Descripción del producto..."
                 className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-5 text-sm font-bold focus:border-naga-purple focus:bg-white/[0.08] transition-all outline-none resize-none placeholder:text-gray-700"
               />
             </div>
             
-            <div className="grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-2 gap-6">
               <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-1">Precio Unitario ($)</label>
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-1">Precio ($)</label>
                 <div className="relative">
                   <span className="absolute left-6 top-1/2 -translate-y-1/2 text-naga-purple font-black">$</span>
                   <input 
@@ -200,12 +275,12 @@ export default function InventoryPage() {
                     onChange={handleInputChange}
                     required
                     placeholder="0.00"
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-6 py-5 text-sm font-bold focus:border-naga-purple focus:bg-white/[0.08] transition-all outline-none"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-6 py-4 text-sm font-bold focus:border-naga-purple focus:bg-white/[0.08] transition-all outline-none"
                   />
                 </div>
               </div>
               <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-1">Stock Inicial</label>
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-1">Stock</label>
                 <input 
                   type="number" 
                   name="stock"
@@ -213,14 +288,12 @@ export default function InventoryPage() {
                   onChange={handleInputChange}
                   required
                   placeholder="Cantidad"
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-5 text-sm font-bold focus:border-naga-purple focus:bg-white/[0.08] transition-all outline-none"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold focus:border-naga-purple focus:bg-white/[0.08] transition-all outline-none"
                 />
               </div>
             </div>
-          </div>
 
-          <div className="space-y-8">
-            <div className="grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-2 gap-6">
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-1">Categoría</label>
                 <div className="relative">
@@ -228,7 +301,8 @@ export default function InventoryPage() {
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-5 text-sm font-bold focus:border-naga-purple focus:bg-white/[0.08] transition-all outline-none appearance-none cursor-pointer"
+                    aria-label="Seleccionar categoría"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold focus:border-naga-purple focus:bg-white/[0.08] transition-all outline-none appearance-none cursor-pointer"
                   >
                     <option value="playeras">Playeras (Chunchos)</option>
                     <option value="bolsas">Bolsas (La Pinche)</option>
@@ -245,61 +319,113 @@ export default function InventoryPage() {
                   name="discount"
                   value={formData.discount}
                   onChange={handleInputChange}
-                  placeholder="Ej: 15"
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-5 text-sm font-bold focus:border-naga-purple focus:bg-white/[0.08] transition-all outline-none"
+                  placeholder="0"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold focus:border-naga-purple focus:bg-white/[0.08] transition-all outline-none"
                 />
               </div>
             </div>
 
-            <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-1">Imagen Principal (URL / Storage)</label>
-              <div className="relative group/input">
-                <div className="absolute left-6 top-1/2 -translate-y-1/2 p-2 bg-white/5 rounded-lg text-gray-500 group-focus-within/input:text-naga-purple transition-colors">
-                  <ImageIcon size={18} />
+            {formData.category === "playeras" && (
+              <div className="space-y-3 animate-in fade-in slide-in-from-left-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-naga-purple ml-1">Subcategoría (Colección)</label>
+                <div className="relative">
+                  <select 
+                    name="collection"
+                    value={formData.collection}
+                    onChange={handleInputChange}
+                    required
+                    aria-label="Seleccionar subcategoría"
+                    className="w-full bg-naga-purple/5 border border-naga-purple/20 rounded-2xl px-6 py-4 text-sm font-bold focus:border-naga-purple focus:bg-naga-purple/10 transition-all outline-none appearance-none cursor-pointer text-white"
+                  >
+                    <option value="" disabled className="bg-black">Seleccionar sección...</option>
+                    <option value="cafecito" className="bg-black">Un cafecito pa' llevar</option>
+                    <option value="cdmx" className="bg-black">Ciudad de México</option>
+                    <option value="arte" className="bg-black">Colección de Arte</option>
+                  </select>
+                  <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-naga-purple pointer-events-none" size={16} />
                 </div>
-                <input 
-                  type="text" 
-                  name="image_url"
-                  value={formData.image_url}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="Ej: /bolsa1.jpg o URL de Supabase"
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl pl-16 pr-6 py-5 text-sm font-bold focus:border-naga-purple focus:bg-white/[0.08] transition-all outline-none placeholder:text-gray-700"
-                />
               </div>
-            </div>
+            )}
 
-            <div className="grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-2 gap-6">
               <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-1">Variantes: Colores</label>
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-1">Colores</label>
                 <input 
                   type="text" 
                   name="colors"
                   value={formData.colors}
                   onChange={handleInputChange}
-                  placeholder="Negro, Blanco, Rojo..."
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-5 text-sm font-bold focus:border-naga-purple outline-none"
+                  placeholder="Azul, Negro..."
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold focus:border-naga-purple outline-none"
                 />
               </div>
               <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-1">Variantes: Tallas</label>
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-1">Tallas</label>
                 <input 
                   type="text" 
                   name="sizes"
                   value={formData.sizes}
                   onChange={handleInputChange}
-                  placeholder="S, M, L, XL..."
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-5 text-sm font-bold focus:border-naga-purple outline-none"
+                  placeholder="S, M, L..."
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold focus:border-naga-purple outline-none"
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Media & Submit (4 columns) */}
+          <div className="lg:col-span-5 space-y-8">
+            <div className="space-y-3">
+              <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-1">Imagen del Producto</label>
+              <div className="h-full">
+                {imagePreview ? (
+                  <div className="relative w-full aspect-square rounded-3xl overflow-hidden border-2 border-naga-purple group/preview bg-white/5 shadow-2xl">
+                    <Image src={imagePreview} alt="Preview" fill className="object-contain p-4" />
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        setImagePreview(null);
+                        setFormData(prev => ({ ...prev, image_url: "" }));
+                      }}
+                      className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover/preview:opacity-100 transition-opacity gap-2"
+                    >
+                      <X size={32} className="text-white" />
+                      <span className="text-[10px] font-black uppercase text-white tracking-widest">Cambiar Imagen</span>
+                    </button>
+                  </div>
+                ) : (
+                  <label className="w-full aspect-square bg-white/5 border-2 border-dashed border-white/10 rounded-3xl flex flex-col items-center justify-center gap-4 cursor-pointer hover:border-naga-purple hover:bg-white/[0.08] transition-all group/upload shadow-inner">
+                    <input 
+                      type="file" 
+                      className="hidden" 
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={uploadingImage}
+                    />
+                    {uploadingImage ? (
+                      <Loader2 className="animate-spin text-naga-purple" size={40} />
+                    ) : (
+                      <>
+                        <div className="p-6 bg-white/5 rounded-3xl group-hover/upload:bg-naga-purple/10 transition-all">
+                          <Upload size={48} className="text-gray-600 group-hover/upload:text-naga-purple transition-colors" />
+                        </div>
+                        <div className="text-center px-6">
+                          <span className="block text-xs font-black uppercase tracking-[0.2em] text-gray-400 group-hover/upload:text-white transition-colors">Subir Imagen</span>
+                          <span className="block text-[9px] font-bold uppercase tracking-widest text-gray-600 mt-2">PNG, JPG o WEBP</span>
+                        </div>
+                      </>
+                    )}
+                  </label>
+                )}
               </div>
             </div>
 
             <button 
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-naga-purple text-white py-6 rounded-2xl font-black uppercase tracking-[0.4em] shadow-2xl shadow-naga-purple/30 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-4 text-xs mt-4"
+              className="w-full bg-naga-purple text-white py-6 rounded-2xl font-black uppercase tracking-[0.4em] shadow-2xl shadow-naga-purple/30 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-4 text-xs"
             >
-              {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : "Publicar en Nagasapi Store"}
+              {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : "Publicar Producto"}
             </button>
           </div>
         </form>
@@ -323,7 +449,11 @@ export default function InventoryPage() {
                 className="w-full bg-white/5 border border-white/10 rounded-2xl pl-16 pr-6 py-4 text-xs font-bold outline-none focus:border-naga-purple focus:bg-white/[0.08] transition-all"
               />
             </div>
-            <button className="bg-white/5 border border-white/10 p-4 rounded-2xl hover:bg-white/10 transition-all text-gray-500">
+            <button 
+              className="bg-white/5 border border-white/10 p-4 rounded-2xl hover:bg-white/10 transition-all text-gray-500"
+              title="Filtrar"
+              aria-label="Filtrar productos"
+            >
               <Filter size={24} />
             </button>
           </div>
@@ -404,13 +534,15 @@ export default function InventoryPage() {
                         <button 
                           className="p-4 bg-white/5 border border-white/10 rounded-2xl text-gray-500 hover:text-white hover:bg-white/10 transition-all shadow-xl"
                           title="Editar"
+                          aria-label="Editar producto"
                         >
                           <Edit3 size={20} />
                         </button>
                         <button 
                           onClick={() => handleDelete(p.id)}
                           className="p-4 bg-naga-red/5 border border-naga-red/10 rounded-2xl text-naga-red hover:bg-naga-red hover:text-white transition-all shadow-xl"
-                          title="Dar de baja"
+                          title="Eliminar"
+                          aria-label="Eliminar producto"
                         >
                           <Trash2 size={20} />
                         </button>
